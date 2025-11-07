@@ -1,3 +1,4 @@
+// src/app/api/email-module/gm-enable-extension/route.tsx
 import { NextRequest, NextResponse } from "next/server";
 import connectToDatabase from "@/lib/mongoDB/mongoDB";
 

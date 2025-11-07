@@ -1,3 +1,4 @@
+// \src\app\whitecloak\applicant\page.tsx
 import Dashboard from "@/lib/components/screen/Dashboard";
 
 export default function () {

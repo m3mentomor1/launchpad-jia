@@ -1,3 +1,4 @@
+// src/app/api/get-org/route.ts
 import { NextResponse } from "next/server";
 import connectMongoDB from "@/lib/mongoDB/mongoDB";
 
@@ -21,11 +22,11 @@ export async function POST(req: Request) {
             },
             {
               $match: {
-                $expr: { 
+                $expr: {
                   $and: [
                     { $eq: ["$_idStr", "$$orgIdStr"] },
-                    { $eq: ["$status", "active"] }
-                  ]
+                    { $eq: ["$status", "active"] },
+                  ],
                 },
               },
             },
@@ -62,7 +63,10 @@ export async function POST(req: Request) {
 export async function GET() {
   const { db } = await connectMongoDB();
 
-  const orgs = await db.collection("organizations").find({ status: "active" }).toArray();
+  const orgs = await db
+    .collection("organizations")
+    .find({ status: "active" })
+    .toArray();
 
   return NextResponse.json(orgs);
 }

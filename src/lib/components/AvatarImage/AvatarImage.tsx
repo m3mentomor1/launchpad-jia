@@ -1,3 +1,4 @@
+// \src\lib\components\AvatarImage\AvatarImage.tsx
 export default function AvatarImage({
   src,
   className,

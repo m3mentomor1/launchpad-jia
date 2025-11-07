@@ -1,3 +1,4 @@
+// \src\app\whitecloak\layout.tsx
 import Context from "@/lib/context/Context";
 import "@/lib/styles/common/animation.scss";
 import "@/lib/styles/common/global.scss";

@@ -1,3 +1,4 @@
+// src/app/(job-portal)/dashboard/layout.tsx
 import Sidebar from "@/lib/components/commonV2/Sidebar";
 
 export const metadata = {

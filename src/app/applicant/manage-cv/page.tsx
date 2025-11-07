@@ -1,3 +1,4 @@
+// src\app\applicant\manage-cv\page.tsx
 "use client";
 
 import CardTypingLoader from "@/lib/components/AnalysisComponents/CardTypingLoader";

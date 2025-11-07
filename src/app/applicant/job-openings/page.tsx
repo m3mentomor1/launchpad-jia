@@ -1,3 +1,4 @@
+// \src\app\applicant\job-openings\page.tsx
 "use client";
 import React, { useEffect, useState } from "react";
 import JobOpeningsTable from "@/lib/components/DataTables/JobOpeningsTable";

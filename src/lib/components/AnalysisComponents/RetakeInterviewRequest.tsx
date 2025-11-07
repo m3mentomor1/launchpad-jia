@@ -1,3 +1,4 @@
+// \src\lib\components\AnalysisComponents\RetakeInterviewRequest.tsx
 import moment from "moment";
 import axios from "axios";
 import { useAppContext } from "@/lib/context/AppContext";
@@ -59,11 +60,11 @@ export default function RetakeInterviewRequest({ data }) {
               toStage: "Pending AI Interview",
               action: "Endorsed",
               updatedBy: {
-                  image: user?.image,
-                  name: user?.name,
-                  email: user?.email,
+                image: user?.image,
+                name: user?.name,
+                email: user?.email,
               },
-          },
+            },
           });
 
           Swal.fire({

@@ -1,3 +1,4 @@
+// src/app/api/reset-interview-data/route.tsx
 import { NextResponse } from "next/server";
 import connectMongoDB from "@/lib/mongoDB/mongoDB";
 import { ObjectId } from "mongodb";
@@ -53,15 +54,14 @@ export async function POST(request: Request) {
       interviewID: interviewInstance.interviewID,
     });
 
-
     // delete cloudflare recording if exists
     if (interviewInstance.interviewRecording?.filename) {
       const s3Client = new S3Client({
         region: "auto",
         endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
         credentials: {
-            accessKeyId: process.env.R2_ACCESS_KEY_ID,
-            secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+          accessKeyId: process.env.R2_ACCESS_KEY_ID,
+          secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
         },
       });
 

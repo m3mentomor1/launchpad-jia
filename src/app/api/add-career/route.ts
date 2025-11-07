@@ -1,3 +1,4 @@
+// \src\app\api\add-career\route.ts
 import { NextResponse } from "next/server";
 import connectMongoDB from "@/lib/mongoDB/mongoDB";
 import { guid } from "@/lib/Utils";
@@ -38,44 +39,58 @@ export async function POST(request: Request) {
 
     const { db } = await connectMongoDB();
 
-    const orgDetails = await db.collection("organizations").aggregate([
-      {
-        $match: {
-          _id: new ObjectId(orgID)
-        }
-      },
-      {
-        $lookup: {
+    const orgDetails = await db
+      .collection("organizations")
+      .aggregate([
+        {
+          $match: {
+            _id: new ObjectId(orgID),
+          },
+        },
+        {
+          $lookup: {
             from: "organization-plans",
             let: { planId: "$planId" },
             pipeline: [
-                {
-                    $addFields: {
-                        _id: { $toString: "$_id" }
-                    }
+              {
+                $addFields: {
+                  _id: { $toString: "$_id" },
                 },
-                {
-                    $match: {
-                        $expr: { $eq: ["$_id", "$$planId"] }
-                    }
-                }
+              },
+              {
+                $match: {
+                  $expr: { $eq: ["$_id", "$$planId"] },
+                },
+              },
             ],
-            as: "plan"
-        }
-      },
-      {
-        $unwind: "$plan"
-      },
-    ]).toArray();
+            as: "plan",
+          },
+        },
+        {
+          $unwind: "$plan",
+        },
+      ])
+      .toArray();
 
     if (!orgDetails || orgDetails.length === 0) {
-      return NextResponse.json({ error: "Organization not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Organization not found" },
+        { status: 404 }
+      );
     }
 
-    const totalActiveCareers = await db.collection("careers").countDocuments({ orgID, status: "active" });
+    const totalActiveCareers = await db
+      .collection("careers")
+      .countDocuments({ orgID, status: "active" });
 
-    if (totalActiveCareers >= (orgDetails[0].plan.jobLimit + (orgDetails[0].extraJobSlots || 0))) {
-      return NextResponse.json({ error: "You have reached the maximum number of jobs for your plan" }, { status: 400 });
+    if (
+      totalActiveCareers >=
+      orgDetails[0].plan.jobLimit + (orgDetails[0].extraJobSlots || 0)
+    ) {
+      return NextResponse.json(
+        { error: "You have reached the maximum number of jobs for your plan" },
+        { status: 400 }
+      );
     }
 
     const career = {

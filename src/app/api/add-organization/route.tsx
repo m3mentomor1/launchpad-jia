@@ -1,3 +1,4 @@
+// src/app/api/add-organization/route.tsx
 import { NextRequest, NextResponse } from "next/server";
 import connectMongoDB from "@/lib/mongoDB/mongoDB";
 import { guid } from "@/lib/Utils";

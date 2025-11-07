@@ -1,3 +1,4 @@
+// src\lib\components\AnalysisComponents\JobFitBadge.tsx
 import { formatMap } from "@/lib/Utils";
 
 export default function (props) {

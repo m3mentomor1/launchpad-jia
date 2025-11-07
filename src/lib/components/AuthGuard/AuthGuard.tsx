@@ -1,3 +1,4 @@
+// src\lib\components\AuthGuard\AuthGuard.tsx
 "use client";
 
 import { useAppContext } from "@/lib/context/AppContext";
@@ -40,12 +41,19 @@ export default function AuthGuard() {
         const params = new URLSearchParams(searchParams);
         params.delete("orgID");
         const existingParams = params.toString();
-        router.replace(`${pathname}?orgID=${activeOrg._id}${existingParams ? `&${existingParams}` : ""}`);
+        router.replace(
+          `${pathname}?orgID=${activeOrg._id}${
+            existingParams ? `&${existingParams}` : ""
+          }`
+        );
       } else if (orgIDparams) {
         const foundOrg = orgList.find((o: any) => o._id === orgIDparams);
-        const superAdminResponse = await axios.post("/api/admin/check-super-admin", {
-          email: userData.email,
-        });
+        const superAdminResponse = await axios.post(
+          "/api/admin/check-super-admin",
+          {
+            email: userData.email,
+          }
+        );
         const isSuperAdmin = superAdminResponse.data.isSuperAdmin;
 
         if (!foundOrg && !isSuperAdmin) {
@@ -61,11 +69,14 @@ export default function AuthGuard() {
         }
 
         if (!foundOrg && isSuperAdmin) {
-          const orgDetails = await axios.get("/api/admin/get-organization-details", {
-            params: {
-              id: orgIDparams,
+          const orgDetails = await axios.get(
+            "/api/admin/get-organization-details",
+            {
+              params: {
+                id: orgIDparams,
+              },
             }
-          });
+          );
           if (orgDetails.data.status === "inactive") {
             clearUserSession();
             errorToast("Your organization is inactive", 1500);
@@ -118,11 +129,14 @@ export default function AuthGuard() {
         }
 
         // Check if org is active
-        const orgDetails = await axios.get("/api/admin/get-organization-details", {
-          params: {
-            id: activeOrg._id,
+        const orgDetails = await axios.get(
+          "/api/admin/get-organization-details",
+          {
+            params: {
+              id: activeOrg._id,
+            },
           }
-        });
+        );
         if (orgDetails.data.status === "inactive") {
           clearUserSession();
           errorToast("Your organization is inactive", 1500);
@@ -175,7 +189,7 @@ export default function AuthGuard() {
           if (window.location.pathname.includes("dashboard")) {
             errorToast("You are not authorized to access this page", 1500);
             setTimeout(() => {
-              window.location.href = '/';
+              window.location.href = "/";
             }, 1500);
           }
         }

@@ -1,9 +1,11 @@
+// src/app/api/whitecloak/manage-application/route.ts
 import connectMongoDB from "@/lib/mongoDB/mongoDB";
 import { ObjectId } from "mongodb";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
-  const { interviewData, email, body, interviewTransaction } = await request.json();
+  const { interviewData, email, body, interviewTransaction } =
+    await request.json();
 
   if (!interviewData || !email || !body) {
     return NextResponse.json(
@@ -61,10 +63,12 @@ export async function POST(request: Request) {
   }
 
   // Update career lastActivityAt to current date
-  await db.collection("careers").updateOne(
-    { id: interviewInstance.id },
-    { $set: { lastActivityAt: new Date() } }
-  );
+  await db
+    .collection("careers")
+    .updateOne(
+      { id: interviewInstance.id },
+      { $set: { lastActivityAt: new Date() } }
+    );
 
   return NextResponse.json({
     message: "Job application updated successfully.",

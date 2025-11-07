@@ -1,3 +1,4 @@
+// \src\app\admin-portal\page.tsx
 "use client";
 
 import React from "react";
@@ -5,16 +6,30 @@ import HeaderBar from "@/lib/PageComponent/HeaderBar";
 import AdminDashboard from "@/lib/components/AdminComponents/AdminDashboard";
 
 export default function () {
-  
   return (
     <>
-      <HeaderBar activeLink="Dashboard" currentPage="Overview" icon="la la-chart-area" />
-      <div className="container-fluid mt--7" style={{ paddingTop: "6rem", paddingBottom: "6rem" }}>
+      <HeaderBar
+        activeLink="Dashboard"
+        currentPage="Overview"
+        icon="la la-chart-area"
+      />
+      <div
+        className="container-fluid mt--7"
+        style={{ paddingTop: "6rem", paddingBottom: "6rem" }}
+      >
         <div className="row">
           <div className="col">
-            <div style={{ marginBottom: "35px"}}>
-              <h1 style={{ fontSize: "24px", fontWeight: 700, color: "#181D27" }}>Dashboard</h1>
-              <span style={{ fontSize: "16px", color: "#717680", fontWeight: 500 }}>Here’s an overview of all listed organizations in Jia</span>
+            <div style={{ marginBottom: "35px" }}>
+              <h1
+                style={{ fontSize: "24px", fontWeight: 700, color: "#181D27" }}
+              >
+                Dashboard
+              </h1>
+              <span
+                style={{ fontSize: "16px", color: "#717680", fontWeight: 500 }}
+              >
+                Here’s an overview of all listed organizations in Jia
+              </span>
             </div>
             <AdminDashboard />
           </div>

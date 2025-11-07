@@ -1,3 +1,4 @@
+// src/app/api/get-metrics/route.tsx
 import { NextResponse } from "next/server";
 import connectMongoDB from "@/lib/mongoDB/mongoDB";
 
@@ -7,7 +8,10 @@ export async function POST(req: Request) {
     const { orgID } = await req.json();
 
     // Get counts from each collection
-    const careersCount = await db.collection("careers").find({ orgID, status: "active" }).count();
+    const careersCount = await db
+      .collection("careers")
+      .find({ orgID, status: "active" })
+      .count();
     const interviewsCount = await db
       .collection("interviews")
       .find({ orgID })

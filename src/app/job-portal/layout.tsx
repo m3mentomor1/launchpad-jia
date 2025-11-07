@@ -1,3 +1,4 @@
+// \src\app\job-portal\layout.tsx
 import "@/lib/styles/commonV2/globals.scss";
 import ContextV2 from "@/lib/context/ContextV2";
 

@@ -1,3 +1,4 @@
+// \src\app\my-interviews\page.tsx
 "use client";
 import { signInWithGoogle } from "@/lib/firebase/firebaseClient";
 import { useEffect, useState } from "react";
@@ -19,7 +20,6 @@ export default function () {
       });
 
       setJobApplications(response.data);
-
     } catch (error) {
       console.error("Error fetching job openings:", error);
     }
@@ -39,14 +39,18 @@ export default function () {
     <>
       <title>WhiteCloak | applicant</title>
       <div className="auth-panel">
-        <div className="panel left" style={{ 
-          overflowY: "auto",
-          maxHeight: "100vh",
-        }}>
-          <div className="form-section fade-in-bottom"
+        <div
+          className="panel left"
           style={{
-            paddingTop: "20px",
+            overflowY: "auto",
+            maxHeight: "100vh",
           }}
+        >
+          <div
+            className="form-section fade-in-bottom"
+            style={{
+              paddingTop: "20px",
+            }}
           >
             <div className="auth-form">
               <img
@@ -85,8 +89,8 @@ export default function () {
               <br />
 
               <strong>
-                <i className="la la-microphone text-primary blink-2"></i>{" "}
-                All Applications
+                <i className="la la-microphone text-primary blink-2"></i> All
+                Applications
               </strong>
               <br />
 
@@ -98,20 +102,29 @@ export default function () {
                       key={index}
                       style={{ flexDirection: "column" }}
                     >
-                      <div style={{ display: "flex", width: "100%", flexDirection: "row", justifyContent: "space-between" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          width: "100%",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
                         <div className="job-title" style={{ width: "70%" }}>
                           <h2>{job.jobTitle}</h2>
                         </div>
 
-                      {job.status === "For Interview" && <div 
-                          className="cta"
-                          onClick={() => {
-                            startInterview(job);
-                          }}
-                        >
-                        <span>Start Interview</span>
-                        <i className="la la-arrow-circle-right"></i>
-                      </div>}
+                        {job.status === "For Interview" && (
+                          <div
+                            className="cta"
+                            onClick={() => {
+                              startInterview(job);
+                            }}
+                          >
+                            <span>Start Interview</span>
+                            <i className="la la-arrow-circle-right"></i>
+                          </div>
+                        )}
                       </div>
                       <ApplicationStatusStep job={job} />
                     </div>

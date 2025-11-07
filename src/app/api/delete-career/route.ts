@@ -1,3 +1,4 @@
+// src/app/api/delete-career/route.ts
 import { NextResponse } from "next/server";
 import connectMongoDB from "@/lib/mongoDB/mongoDB";
 import { ObjectId } from "mongodb";

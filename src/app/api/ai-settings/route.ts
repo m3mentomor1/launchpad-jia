@@ -1,3 +1,4 @@
+// src/app/api/ai-settings/route.ts
 import connectMongoDB from "@/lib/mongoDB/mongoDB";
 import { NextResponse } from "next/server";
 

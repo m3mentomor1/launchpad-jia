@@ -1,3 +1,4 @@
+// \src\app\login\page.tsx
 "use client";
 import { signInWithGoogle } from "@/lib/firebase/firebaseClient";
 import { useEffect } from "react";

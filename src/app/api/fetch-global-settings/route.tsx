@@ -1,3 +1,4 @@
+// src/app/api/fetch-global-settings/route.tsx
 import connectMongoDB from "@/lib/mongoDB/mongoDB";
 import { NextResponse } from "next/server";
 

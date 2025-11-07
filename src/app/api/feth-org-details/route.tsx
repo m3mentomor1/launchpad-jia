@@ -1,3 +1,4 @@
+// src/app/api/feth-org-details/route.tsx
 import connectMongoDB from "@/lib/mongoDB/mongoDB";
 import { ObjectId } from "mongodb";
 
@@ -22,33 +23,36 @@ export async function POST(req: Request) {
       query = { _id: orgID };
     }
 
-    const orgDoc = await db.collection("organizations").aggregate([
-      {
-        $match: query
-      },
-      {
-        $lookup: {
+    const orgDoc = await db
+      .collection("organizations")
+      .aggregate([
+        {
+          $match: query,
+        },
+        {
+          $lookup: {
             from: "organization-plans",
             let: { planId: "$planId" },
             pipeline: [
-                {
-                    $addFields: {
-                        _id: { $toString: "$_id" }
-                    }
+              {
+                $addFields: {
+                  _id: { $toString: "$_id" },
                 },
-                {
-                    $match: {
-                        $expr: { $eq: ["$_id", "$$planId"] }
-                    }
-                }
+              },
+              {
+                $match: {
+                  $expr: { $eq: ["$_id", "$$planId"] },
+                },
+              },
             ],
-            as: "plan"
-        }
-    },
-    {
-      $unwind: "$plan"
-    },
-    ]).toArray();
+            as: "plan",
+          },
+        },
+        {
+          $unwind: "$plan",
+        },
+      ])
+      .toArray();
 
     if (!orgDoc || orgDoc.length === 0) {
       return Response.json(

@@ -1,3 +1,4 @@
+// \src\app\applicant\layout.tsx
 "use client";
 
 import Sidebar from "@/lib/PageComponent/Sidebar";
@@ -33,8 +34,8 @@ export default function Layout({ children }) {
   ];
   // Check active link from the url
   useEffect(() => {
-    window.location.href = "https://www.hellojia.ai"
-    
+    window.location.href = "https://www.hellojia.ai";
+
     if (pathname) {
       let pathSplit = pathname.split("/");
 

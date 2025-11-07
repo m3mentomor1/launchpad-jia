@@ -1,3 +1,4 @@
+// \src\app\admin-portal\organizations\page.tsx
 "use client";
 
 import React from "react";
@@ -7,7 +8,11 @@ import OrganizationsTable from "@/lib/components/DataTables/OrganizationsTable";
 export default function () {
   return (
     <>
-      <HeaderBar activeLink="Organizations" currentPage="Overview" icon="la la-building" />
+      <HeaderBar
+        activeLink="Organizations"
+        currentPage="Overview"
+        icon="la la-building"
+      />
       <div className="container-fluid mt--7" style={{ paddingTop: "6rem" }}>
         <div className="row">
           <div className="col">

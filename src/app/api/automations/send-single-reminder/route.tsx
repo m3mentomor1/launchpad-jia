@@ -1,3 +1,4 @@
+// src/app/api/automations/send-single-reminder/route.tsx
 import { NextRequest, NextResponse } from "next/server";
 import { sendEmail } from "@/lib/Email";
 import connectMongoDB from "@/lib/mongoDB/mongoDB";

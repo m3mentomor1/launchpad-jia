@@ -1,3 +1,4 @@
+// src\lib\components\AuthGuard\SuperAdminAuthGuard.tsx
 "use client";
 
 import axios from "axios";
@@ -9,10 +10,9 @@ export default function SuperAdminAuthGuard() {
   const [blocked, setBlocked] = useState(true);
 
   useEffect(() => {
-
     const checkSuperAdmin = async (email: string) => {
       const response = await axios.post("/api/admin/check-super-admin", {
-        email: email
+        email: email,
       });
 
       if (response.data.isSuperAdmin) {
@@ -24,7 +24,7 @@ export default function SuperAdminAuthGuard() {
           window.location.href = "/";
         }, 1500);
       }
-    }
+    };
     if (!localStorage.user) {
       setBlocked(true);
       window.location.href = "/";
@@ -33,7 +33,7 @@ export default function SuperAdminAuthGuard() {
     if (localStorage.user) {
       const userData = JSON.parse(localStorage.user);
       checkSuperAdmin(userData.email);
-    } 
+    }
   }, []);
 
   return (

@@ -1,3 +1,4 @@
+// src/app/api/apply-job/route.tsx
 import { NextResponse } from "next/server";
 import connectMongoDB from "@/lib/mongoDB/mongoDB";
 import { sendEmail } from "@/lib/Email";
@@ -71,7 +72,9 @@ export async function POST(request: Request) {
     });
 
     if (status === "For Interview" && origin === "direct-interview") {
-      const interviewDetails = await db.collection("interviews").findOne({ id: interviewData.id, email: interviewData.email });
+      const interviewDetails = await db
+        .collection("interviews")
+        .findOne({ id: interviewData.id, email: interviewData.email });
       if (interviewDetails) {
         await db.collection("interview-history").insertOne({
           interviewUID: interviewDetails._id.toString(),
@@ -81,10 +84,12 @@ export async function POST(request: Request) {
         });
 
         // Update career lastActivityAt to current date
-        await db.collection("careers").updateOne(
-          { id: interviewDetails.id },
-          { $set: { lastActivityAt: new Date() } }
-        );
+        await db
+          .collection("careers")
+          .updateOne(
+            { id: interviewDetails.id },
+            { $set: { lastActivityAt: new Date() } }
+          );
       }
     }
 

@@ -1,3 +1,4 @@
+// \src\lib\components\AnalysisComponents\CardTypingLoader.tsx
 import { useEffect, useState } from "react";
 import { TypeAnimation } from "react-type-animation";
 

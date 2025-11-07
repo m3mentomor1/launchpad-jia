@@ -1,3 +1,4 @@
+// src/app/api/screen-cv/route.tsx
 import { NextResponse } from "next/server";
 import connectMongoDB from "@/lib/mongoDB/mongoDB";
 import OpenAI from "openai";

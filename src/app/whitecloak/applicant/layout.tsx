@@ -1,3 +1,4 @@
+// \src\app\whitecloak\applicant\layout.tsx
 import Sidebar from "@/lib/components/common/Sidebar";
 
 export const metadata = {

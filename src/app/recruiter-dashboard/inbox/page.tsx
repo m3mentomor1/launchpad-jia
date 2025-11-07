@@ -1,3 +1,4 @@
+// \src\app\recruiter-dashboard\inbox\page.tsx
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";

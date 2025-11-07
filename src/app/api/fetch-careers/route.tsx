@@ -1,3 +1,4 @@
+// src/app/api/fetch-careers/route.tsx
 import { NextResponse } from "next/server";
 import connectMongoDB from "@/lib/mongoDB/mongoDB";
 

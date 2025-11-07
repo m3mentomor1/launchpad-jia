@@ -1,3 +1,4 @@
+// \src\app\old-dashboard\interviews\manage\[slug]\page.tsx
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -220,21 +221,24 @@ export default function Dashboard() {
   }
 
   async function finishUpload(interviewData: any) {
-    axios.post("/api/finish-upload", {
-      uploadId: interviewData.interviewUpload.uploadId,
-      parts: interviewData.interviewParts,
-      fileName: interviewData.interviewUpload.key,
-      filetype: interviewData.interviewUpload.filetype,
-      uid: interviewData._id,
-    }).then((res) => {
-      // Update state
-      setInterviewRecording({
-        filename: interviewData.interviewUpload.key,
+    axios
+      .post("/api/finish-upload", {
+        uploadId: interviewData.interviewUpload.uploadId,
+        parts: interviewData.interviewParts,
+        fileName: interviewData.interviewUpload.key,
         filetype: interviewData.interviewUpload.filetype,
+        uid: interviewData._id,
+      })
+      .then((res) => {
+        // Update state
+        setInterviewRecording({
+          filename: interviewData.interviewUpload.key,
+          filetype: interviewData.interviewUpload.filetype,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
       });
-    }).catch((err) => {
-      console.log(err);
-    });
   }
 
   async function fetchData(id: string) {
@@ -258,7 +262,11 @@ export default function Dashboard() {
       });
       window.interviewObjID = response.data._id;
 
-      if (!response.data?.interviewRecording && response.data?.interviewUpload && response.data?.interviewParts?.length > 0) {
+      if (
+        !response.data?.interviewRecording &&
+        response.data?.interviewUpload &&
+        response.data?.interviewParts?.length > 0
+      ) {
         finishUpload(response.data);
       }
 
@@ -756,9 +764,7 @@ export default function Dashboard() {
                     <div className="card-header">
                       <h3 className="mb-0 mr-auto">
                         <i className="la la-file-text text-primary mr-2" />{" "}
-                        {interviewRecording.filetype.includes(
-                          "audio"
-                        )
+                        {interviewRecording.filetype.includes("audio")
                           ? "Audio Recording"
                           : "Video Recording"}
                       </h3>
@@ -766,9 +772,7 @@ export default function Dashboard() {
 
                     {/* Audio/Video Player */}
                     <div className="card-body">
-                      {interviewRecording.filetype.includes(
-                        "audio"
-                      ) ? (
+                      {interviewRecording.filetype.includes("audio") ? (
                         <audio
                           style={{ width: "100%" }}
                           className="shadow-sm"

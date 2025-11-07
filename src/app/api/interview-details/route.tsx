@@ -1,3 +1,4 @@
+// src/app/api/interview-details/route.tsx
 import { NextResponse } from "next/server";
 import connectMongoDB from "@/lib/mongoDB/mongoDB";
 
@@ -20,9 +21,7 @@ export async function POST(request: Request) {
       query.orgID = orgID;
     }
 
-    let interview = await db
-      .collection("interviews")
-      .findOne(query);
+    let interview = await db.collection("interviews").findOne(query);
 
     if (!interview) {
       return NextResponse.json(

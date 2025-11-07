@@ -1,3 +1,4 @@
+// src/app/api/job-portal/fetch-careers/route.ts
 import connectMongoDB from "@/lib/mongoDB/mongoDB";
 import { ObjectId } from "mongodb";
 import { NextResponse } from "next/server";

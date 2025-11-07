@@ -1,3 +1,4 @@
+// \src\app\applicant\job-openings\[slug]\page.tsx
 "use client";
 
 import axios from "axios";

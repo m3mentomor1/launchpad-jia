@@ -1,3 +1,4 @@
+// src/app/api/job-portal/fetch-interviews/route.ts
 import connectMongoDB from "@/lib/mongoDB/mongoDB";
 import { NextResponse } from "next/server";
 

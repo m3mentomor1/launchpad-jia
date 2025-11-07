@@ -1,3 +1,4 @@
+// src\app\recruiter-dashboard\layout.tsx
 "use client";
 
 import { usePathname } from "next/navigation";

@@ -1,3 +1,4 @@
+// src\app\recruiter-dashboard\careers\manage\[slug]\page.tsx
 "use client";
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";

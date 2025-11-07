@@ -1,3 +1,4 @@
+// src/app/api/finish-interview/route.tsx
 import { NextResponse } from "next/server";
 import connectMongoDB from "@/lib/mongoDB/mongoDB";
 import { ObjectId } from "mongodb";
@@ -38,10 +39,12 @@ export async function POST(request: Request) {
 
   // Update career lastActivityAt to current date
   if (interviewData.id) {
-    await db.collection("careers").updateOne(
-      { id: interviewData.id },
-      { $set: { lastActivityAt: new Date() } }
-    );
+    await db
+      .collection("careers")
+      .updateOne(
+        { id: interviewData.id },
+        { $set: { lastActivityAt: new Date() } }
+      );
   }
 
   const interviewTransaction = {
@@ -50,9 +53,9 @@ export async function POST(request: Request) {
     toStage: "AI Interview Review",
     action: "Auto-Promoted",
     updatedBy: {
-        name: "Jia",
+      name: "Jia",
     },
-  }
+  };
 
   await db.collection("interview-history").insertOne({
     ...interviewTransaction,
