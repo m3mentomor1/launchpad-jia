@@ -2,11 +2,24 @@
 import { NextResponse } from "next/server";
 import connectMongoDB from "@/lib/mongoDB/mongoDB";
 import { ObjectId } from "mongodb";
+import { sanitizeObject, validateCareerData } from "@/lib/security/sanitize";
 
 export async function POST(request: Request) {
   try {
-    let requestData = await request.json();
-    const { _id } = requestData;
+    let rawData = await request.json();
+    const { _id } = rawData;
+
+    // Validate data structure
+    const validation = validateCareerData(rawData);
+    if (!validation.valid) {
+      return NextResponse.json(
+        { error: "Validation failed", details: validation.errors },
+        { status: 400 }
+      );
+    }
+
+    // Sanitize all input data - description allows HTML
+    const requestData = sanitizeObject(rawData, ["description"]);
 
     // Validate required fields
     if (!_id) {
@@ -30,15 +43,36 @@ export async function POST(request: Request) {
       .collection("careers")
       .updateOne({ _id: new ObjectId(_id) }, { $set: career });
 
-    return NextResponse.json({
-      message: "Career updated successfully",
-      career,
-    });
-  } catch (error) {
-    console.error("Error adding career:", error);
     return NextResponse.json(
-      { error: "Failed to add career" },
-      { status: 500 }
+      {
+        message: "Career updated successfully",
+        career,
+      },
+      {
+        headers: {
+          "X-Content-Type-Options": "nosniff",
+          "X-Frame-Options": "DENY",
+          "X-XSS-Protection": "1; mode=block",
+        },
+      }
+    );
+  } catch (error: any) {
+    console.error("Error updating career:", error);
+
+    const errorMessage = error.message?.includes("duplicate key")
+      ? "A career with this information already exists"
+      : "Failed to update career. Please try again.";
+
+    return NextResponse.json(
+      { error: errorMessage },
+      {
+        status: 500,
+        headers: {
+          "X-Content-Type-Options": "nosniff",
+          "X-Frame-Options": "DENY",
+          "X-XSS-Protection": "1; mode=block",
+        },
+      }
     );
   }
 }

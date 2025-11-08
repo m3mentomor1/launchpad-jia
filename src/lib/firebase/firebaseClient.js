@@ -1,3 +1,4 @@
+// \src\lib\firebase\firebaseClient.js
 import axios from "axios";
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
@@ -77,13 +78,16 @@ export async function signInWithGoogle(type) {
 
       if (
         (host.includes("localhost") || host.includes("hirejia.ai")) &&
-        res.data.role == "applicant"
+        res.data.role == "applicant" &&
+        !window.location.pathname.includes("/job-portal") &&
+        !window.location.pathname.includes("/applicant")
       ) {
+        // Shows the modal
         Swal.fire({
           title: "No Account Found",
           text: `There's no employer account associated with your login ${res.data.email}.`,
           icon: "warning",
-          showCancelButton: true, // second button
+          showCancelButton: true,
           confirmButtonText: "OK",
           cancelButtonText: "I'm a job seeker",
           customClass: {
