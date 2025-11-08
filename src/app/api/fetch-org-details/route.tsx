@@ -49,7 +49,10 @@ export async function POST(req: Request) {
           },
         },
         {
-          $unwind: "$plan",
+          $unwind: {
+            path: "$plan",
+            preserveNullAndEmptyArrays: true,
+          },
         },
       ])
       .toArray();
@@ -59,6 +62,14 @@ export async function POST(req: Request) {
         { error: "Organization not found" },
         { status: 404 }
       );
+    }
+
+    // If no plan is found, set a default plan
+    if (!orgDoc[0].plan) {
+      orgDoc[0].plan = {
+        jobLimit: 999,
+        name: "Default Plan",
+      };
     }
 
     return Response.json(orgDoc[0]);

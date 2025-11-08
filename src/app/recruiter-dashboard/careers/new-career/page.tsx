@@ -3,7 +3,7 @@
 
 import React from "react";
 import HeaderBar from "@/lib/PageComponent/HeaderBar";
-import CareerForm from "@/lib/components/CareerComponents/CareerForm";
+import SegmentedCareerForm from "@/lib/components/CareerComponents/SegmentedCareerForm";
 
 export default function NewCareerPage() {
   return (
@@ -15,7 +15,7 @@ export default function NewCareerPage() {
       />
       <div className="container-fluid mt--7" style={{ paddingTop: "6rem" }}>
         <div className="row">
-          <CareerForm formType="add" />
+          <SegmentedCareerForm formType="add" />
         </div>
       </div>
     </>

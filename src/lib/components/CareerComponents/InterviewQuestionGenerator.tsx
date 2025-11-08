@@ -113,26 +113,31 @@ export default function (props) {
       Swal.showLoading();
       const interviewCategories = Object.keys(interviewQuestionCategoryMap);
       const response = await axios.post("/api/llm-engine", {
-      systemPrompt:
-        "You are a helpful assistant that can answer questions and help with tasks.",
-      prompt: `Generate ${questionCount * interviewCategories.length} interview questions for the following Job opening: 
+        systemPrompt:
+          "You are a helpful assistant that can answer questions and help with tasks.",
+        prompt: `Generate ${
+          questionCount * interviewCategories.length
+        } interview questions for the following Job opening: 
         Job Title:
         ${jobTitle} 
         Job Description:
         ${description}
   
-        ${interviewCategories.map((category) => {
-          return `Category:
+        ${interviewCategories
+          .map((category) => {
+            return `Category:
           ${category}
           Category Description:
-          ${interviewQuestionCategoryMap[category].description}`
-        }).join("\n")}
+          ${interviewQuestionCategoryMap[category].description}`;
+          })
+          .join("\n")}
   
-        ${interviewCategories.map((category) => `${questionCount} questions for ${category}`).join(", ")}
+        ${interviewCategories
+          .map((category) => `${questionCount} questions for ${category}`)
+          .join(", ")}
 
         ${
-          questions.reduce((acc, group) => acc + group.questions.length, 0) >
-          0
+          questions.reduce((acc, group) => acc + group.questions.length, 0) > 0
             ? `Do not generate questions that are already covered in this list:\n${questions
                 .map((group) =>
                   group.questions
@@ -149,43 +154,43 @@ export default function (props) {
         return it in json format following this for each element {category: "category", questions: ["question1", "question2", "question3", "question4", "question5"]}
         return only the json array, nothing else, now markdown format just pure json code.
         `,
-    });
+      });
 
-    let finalGeneratedQuestions = response.data.result;
+      let finalGeneratedQuestions = response.data.result;
 
-    finalGeneratedQuestions = finalGeneratedQuestions.replace("```json", "");
-    finalGeneratedQuestions = finalGeneratedQuestions.replace("```", "");
+      finalGeneratedQuestions = finalGeneratedQuestions.replace("```json", "");
+      finalGeneratedQuestions = finalGeneratedQuestions.replace("```", "");
 
-    finalGeneratedQuestions = JSON.parse(finalGeneratedQuestions);
-    console.log(finalGeneratedQuestions);
+      finalGeneratedQuestions = JSON.parse(finalGeneratedQuestions);
+      console.log(finalGeneratedQuestions);
 
-    let newArray = [...questions];
+      let newArray = [...questions];
 
-    finalGeneratedQuestions.forEach((questionGroup) => {
-      const categoryIndex = newArray.findIndex(
-        (q) => q.category === questionGroup.category
-      );
-  
-      if (categoryIndex !== -1) {
-        const newQuestions = questionGroup.questions.map((q) => ({
-          id: guid(),
-          question: q,
-        }));
-        newArray[categoryIndex].questions = [
-          ...newArray[categoryIndex].questions,
-          ...newQuestions,
-        ];
-      }
-    })
+      finalGeneratedQuestions.forEach((questionGroup) => {
+        const categoryIndex = newArray.findIndex(
+          (q) => q.category === questionGroup.category
+        );
 
-    console.log(newArray);
+        if (categoryIndex !== -1) {
+          const newQuestions = questionGroup.questions.map((q) => ({
+            id: guid(),
+            question: q,
+          }));
+          newArray[categoryIndex].questions = [
+            ...newArray[categoryIndex].questions,
+            ...newQuestions,
+          ];
+        }
+      });
 
-    setQuestions(newArray);
+      console.log(newArray);
 
-    successToast("Questions generated successfully", 1500);
+      setQuestions(newArray);
 
-    Swal.close();
-    } catch(err) {
+      successToast("Questions generated successfully", 1500);
+
+      Swal.close();
+    } catch (err) {
       console.log(err);
       errorToast("Error generating questions, please try again", 1500);
     }
@@ -354,9 +359,12 @@ export default function (props) {
       })
       .catch((err) => {
         console.log("[Question Generator Fetch Prompt Error]", err);
+        return null;
       });
 
-    setQuestionGenPrompt(configData.question_gen_prompt.prompt);
+    if (configData?.question_gen_prompt?.prompt) {
+      setQuestionGenPrompt(configData.question_gen_prompt.prompt);
+    }
   }
 
   useEffect(() => {
@@ -374,8 +382,8 @@ export default function (props) {
           className="btn btn-default"
           style={{ padding: "5px 20px" }}
           onClick={() => {
-            generateAllQuestions();                                
-          }}  
+            generateAllQuestions();
+          }}
         >
           <i className="la la-cubes text-info"></i> Generate All Questions
         </button>
