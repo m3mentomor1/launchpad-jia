@@ -7,10 +7,7 @@ export async function POST(request: Request) {
   const { db } = await connectMongoDB();
   const { jobID } = await request.json();
   const careerModel = db.collection("careers");
-  const matchConditions: any = [
-    { status: "active" },
-    { "organization.tier": { $in: ["corporate", "enterprise"] } },
-  ];
+  const matchConditions: any = [{ status: "active" }];
 
   if (jobID != "all") {
     if (!ObjectId.isValid(jobID)) {
