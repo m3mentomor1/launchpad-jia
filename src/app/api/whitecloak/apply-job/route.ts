@@ -7,7 +7,7 @@ import { guid } from "@/lib/Utils";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
-  const { user, selectedCareer } = await request.json();
+  const { user, selectedCareer, preScreeningAnswers } = await request.json();
   const { db } = await connectMongoDB();
   const newDate = new Date();
   const interviewData = {
@@ -21,6 +21,7 @@ export async function POST(request: Request) {
     interviewID: guid(),
     completedAt: null,
     reviewers: [],
+    preScreeningAnswers: preScreeningAnswers || {},
   };
 
   delete interviewData._id;

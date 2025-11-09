@@ -210,7 +210,24 @@ export default function SegmentedCareerForm({
           formData.description.trim().length > 0
         );
       case 2:
-        return true; // CV Review step - all fields are optional
+        // Required: At least 1 pre-screening question
+        return (
+          formData.preScreeningQuestions &&
+          formData.preScreeningQuestions.length > 0 &&
+          formData.preScreeningQuestions.every((q: any) => {
+            // Question text must not be empty
+            if (!q.question || q.question.trim().length === 0) return false;
+            // Dropdown questions must have at least one non-empty option
+            if (q.type === "dropdown") {
+              return (
+                q.options &&
+                q.options.length > 0 &&
+                q.options.some((opt: string) => opt.trim().length > 0)
+              );
+            }
+            return true;
+          })
+        );
       case 3:
         // Required: At least 5 interview questions
         const totalQuestions = formData.questions.reduce(

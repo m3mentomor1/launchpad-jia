@@ -16,6 +16,7 @@ export default function ({ modalType, setModalType }) {
   const [inputValue, setInputValue] = useState("");
   const [radioValue, setRadioValue] = useState(null);
   const [reportSuccess, setReportSuccess] = useState(false);
+  const [preScreeningAnswers, setPreScreeningAnswers] = useState({});
   // const [tempInputValue, setTempInputValue] = useState("");
   // const [tempRadioValue, setTempRadioValue] = useState(null);
   const { user, setToasterType } = useAppContext();
@@ -33,6 +34,7 @@ export default function ({ modalType, setModalType }) {
     "reminder",
     "screening",
     "logout",
+    "preScreening",
   ];
   const checkList = {
     [modalList[5]]: [
@@ -219,6 +221,13 @@ export default function ({ modalType, setModalType }) {
     };
   }
 
+  if (modalType == modalList[13]) {
+    handleButtonClick = () => {
+      // Submit pre-screening answers and proceed with application
+      applyJobWithPreScreening();
+    };
+  }
+
   useEffect(() => {
     if (
       [
@@ -229,6 +238,7 @@ export default function ({ modalType, setModalType }) {
         modalList[8],
         modalList[9],
         modalList[11],
+        modalList[13],
       ].includes(modalType)
     ) {
       const storedSelectedCareer = sessionStorage.getItem("selectedCareer");
@@ -266,6 +276,61 @@ export default function ({ modalType, setModalType }) {
         console.log(err);
       });
   }
+
+  function applyJobWithPreScreening() {
+    setModalType("loading");
+
+    axios({
+      method: "POST",
+      url: "/api/whitecloak/apply-job",
+      data: {
+        user,
+        selectedCareer: applicationData,
+        preScreeningAnswers,
+      },
+    })
+      .then((res) => {
+        if (res.data.error) {
+          alert(res.data.message);
+          setModalType(null);
+        } else {
+          setModalType("applied");
+          setPreScreeningAnswers({});
+        }
+      })
+      .catch((err) => {
+        alert("Error applying for job");
+        setModalType(null);
+        console.log(err);
+      });
+  }
+
+  const handlePreScreeningAnswerChange = (questionId: string, value: any) => {
+    setPreScreeningAnswers((prev) => ({
+      ...prev,
+      [questionId]: value,
+    }));
+  };
+
+  const isPreScreeningComplete = () => {
+    if (
+      !applicationData?.preScreeningQuestions ||
+      applicationData.preScreeningQuestions.length === 0
+    ) {
+      return true;
+    }
+
+    return applicationData.preScreeningQuestions.every((question: any) => {
+      const answer = preScreeningAnswers[question.id];
+      if (question.type === "text" || question.type === "dropdown") {
+        return answer && answer.trim().length > 0;
+      }
+      if (question.type === "range") {
+        return answer && answer.min && answer.max;
+      }
+      return false;
+    });
+  };
 
   return (
     <div className={styles.modalContainer}>
@@ -645,6 +710,193 @@ export default function ({ modalType, setModalType }) {
               Cancel
             </button>
             <button onClick={handleButtonClick}>Confirm</button>
+          </div>
+        </div>
+      )}
+
+      {modalType == modalList[13] && applicationData && (
+        <div className={`${styles.modalContent} ${styles[modalType]}`}>
+          <img
+            alt="x"
+            className={styles.xIcon}
+            src={assetConstants.x}
+            onClick={handleClose}
+          />
+          <img alt="logo" src={assetConstants.jiaLogo} />
+          <span className={styles.title}>Pre-Screening Questions</span>
+          <span className={styles.description}>
+            Please answer the following questions to proceed with your
+            application for{" "}
+            <span className={styles.bold}>{applicationData.jobTitle}</span>
+          </span>
+
+          <div
+            style={{
+              width: "100%",
+              maxHeight: "400px",
+              overflowY: "auto",
+              padding: "16px 0",
+              display: "flex",
+              flexDirection: "column",
+              gap: "20px",
+            }}
+          >
+            {applicationData.preScreeningQuestions?.map(
+              (question: any, index: number) => (
+                <div key={question.id} style={{ width: "100%" }}>
+                  <label
+                    style={{
+                      display: "block",
+                      marginBottom: "8px",
+                      fontWeight: 600,
+                      color: "#181D27",
+                      fontSize: "14px",
+                    }}
+                  >
+                    {index + 1}. {question.question}
+                    <span style={{ color: "#EF4444" }}> *</span>
+                  </label>
+
+                  {question.type === "text" && (
+                    <textarea
+                      placeholder="Enter your answer..."
+                      value={preScreeningAnswers[question.id] || ""}
+                      onChange={(e) =>
+                        handlePreScreeningAnswerChange(
+                          question.id,
+                          e.target.value
+                        )
+                      }
+                      style={{
+                        width: "100%",
+                        minHeight: "80px",
+                        padding: "12px",
+                        borderRadius: "8px",
+                        border: "1px solid #D5D7DA",
+                        fontSize: "14px",
+                        resize: "vertical",
+                      }}
+                    />
+                  )}
+
+                  {question.type === "dropdown" && (
+                    <select
+                      value={preScreeningAnswers[question.id] || ""}
+                      onChange={(e) =>
+                        handlePreScreeningAnswerChange(
+                          question.id,
+                          e.target.value
+                        )
+                      }
+                      style={{
+                        width: "100%",
+                        padding: "12px",
+                        borderRadius: "8px",
+                        border: "1px solid #D5D7DA",
+                        fontSize: "14px",
+                        backgroundColor: "#fff",
+                      }}
+                    >
+                      <option value="">Select an option...</option>
+                      {question.options?.map(
+                        (option: string, optIdx: number) => (
+                          <option key={optIdx} value={option}>
+                            {option}
+                          </option>
+                        )
+                      )}
+                    </select>
+                  )}
+
+                  {question.type === "range" && (
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "12px",
+                        alignItems: "center",
+                      }}
+                    >
+                      <div style={{ flex: 1 }}>
+                        <label
+                          style={{
+                            display: "block",
+                            marginBottom: "4px",
+                            fontSize: "12px",
+                            color: "#6B7280",
+                          }}
+                        >
+                          Minimum (PHP)
+                        </label>
+                        <input
+                          type="number"
+                          placeholder="0"
+                          value={preScreeningAnswers[question.id]?.min || ""}
+                          onChange={(e) =>
+                            handlePreScreeningAnswerChange(question.id, {
+                              ...preScreeningAnswers[question.id],
+                              min: e.target.value,
+                            })
+                          }
+                          style={{
+                            width: "100%",
+                            padding: "12px",
+                            borderRadius: "8px",
+                            border: "1px solid #D5D7DA",
+                            fontSize: "14px",
+                          }}
+                        />
+                      </div>
+                      <span style={{ color: "#6B7280", paddingTop: "20px" }}>
+                        -
+                      </span>
+                      <div style={{ flex: 1 }}>
+                        <label
+                          style={{
+                            display: "block",
+                            marginBottom: "4px",
+                            fontSize: "12px",
+                            color: "#6B7280",
+                          }}
+                        >
+                          Maximum (PHP)
+                        </label>
+                        <input
+                          type="number"
+                          placeholder="0"
+                          value={preScreeningAnswers[question.id]?.max || ""}
+                          onChange={(e) =>
+                            handlePreScreeningAnswerChange(question.id, {
+                              ...preScreeningAnswers[question.id],
+                              max: e.target.value,
+                            })
+                          }
+                          style={{
+                            width: "100%",
+                            padding: "12px",
+                            borderRadius: "8px",
+                            border: "1px solid #D5D7DA",
+                            fontSize: "14px",
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )
+            )}
+          </div>
+
+          <div className={styles.bottomContainer}>
+            <button className="secondaryBtn" onClick={handleClose}>
+              Cancel
+            </button>
+            <button
+              className={isPreScreeningComplete() ? "" : "disabled"}
+              disabled={!isPreScreeningComplete()}
+              onClick={handleButtonClick}
+            >
+              Submit & Apply
+            </button>
           </div>
         </div>
       )}

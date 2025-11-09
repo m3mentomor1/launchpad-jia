@@ -38,10 +38,7 @@ export async function POST() {
         },
         {
           $match: {
-            $and: [
-              { status: "active" },
-              { "organization.tier": { $in: ["corporate", "enterprise"] } },
-            ],
+            status: "active",
           },
         },
         {
