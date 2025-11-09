@@ -268,7 +268,7 @@ export default function () {
     }
 
     // if (!careers || navType === "reload") {
-      getCareers();
+    getCareers();
     // } else {
     //   setCareers(JSON.parse(careers));
     // }
@@ -277,7 +277,7 @@ export default function () {
       const interviews = localStorage.getItem("interviews");
 
       // if (!interviews || navType === "reload") {
-        fetchInterviews();
+      fetchInterviews();
       // } else {
       //   const parsedInterviews = JSON.parse(interviews);
       //   setInterviews(parsedInterviews);

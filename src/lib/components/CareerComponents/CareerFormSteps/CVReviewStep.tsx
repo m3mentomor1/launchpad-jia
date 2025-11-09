@@ -282,9 +282,6 @@ export default function CVReviewStep({
                 >
                   2. Pre-Screening Questions
                 </span>
-                <span style={{ fontSize: 12, color: "#6B7280" }}>
-                  (optional)
-                </span>
                 <span
                   style={{
                     fontSize: 14,

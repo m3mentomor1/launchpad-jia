@@ -60,11 +60,6 @@ export async function GET(req: Request) {
         },
         { $unwind: { path: "$interviews", preserveNullAndEmptyArrays: true } },
         {
-          $match: {
-            "interviews.currentStep": { $ne: "Applied" },
-          },
-        },
-        {
           $group: {
             _id: "$_id",
             jobTitle: { $first: "$jobTitle" },
@@ -100,6 +95,8 @@ export async function GET(req: Request) {
                           },
                         ],
                       },
+                      // Exclude "Applied" status from ongoing count
+                      { $ne: ["$interviews.currentStep", "Applied"] },
                     ],
                   },
                   then: 1,
