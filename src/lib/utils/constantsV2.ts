@@ -3,9 +3,9 @@ const jobOpeningsOriginPath = "/job-openings";
 const dashboardOriginPath = "/dashboard";
 
 export const pathConstants = {
-  employee: "https://www.hellojia.ai",
-  employer: "https://www.hirejia.ai",
-  whitecloak: "https://www.whitecloak.com",
+  employee: process.env.NEXT_PUBLIC_APP_URL || window.location.origin,
+  employer: process.env.NEXT_PUBLIC_APP_URL || window.location.origin,
+  whitecloak: process.env.NEXT_PUBLIC_APP_URL || window.location.origin,
   home: originPath,
   jobOpenings: jobOpeningsOriginPath,
   dashboard: dashboardOriginPath,
