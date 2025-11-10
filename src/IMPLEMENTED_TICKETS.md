@@ -598,81 +598,20 @@ preScreeningAnswers: {
 
 ---
 
-## Testing Checklist
-
-### Ticket 1: Development Environment
-
-- [x] MongoDB connection successful
-- [x] Firebase authentication working
-- [x] OpenAI API accessible
-- [x] Application builds without errors
-- [x] Core API URL configured correctly
-
-### Ticket 2: Segmented Form
-
-- [x] All 4 steps render correctly
-- [x] Step validation works for each step
-- [x] Draft saves to localStorage on step change
-- [x] Draft loads on page refresh
-- [x] "Save and Continue" validates before proceeding
-- [x] "Save as Unpublished" works at any step
-- [x] "Publish" button appears on final step
-- [x] Step indicator shows current progress
-- [x] Can navigate to completed steps
-- [x] Clear draft functionality works
-
-### Ticket 3: XSS Protection
-
-- [x] HTML sanitization removes malicious scripts
-- [x] Plain text fields escape HTML entities
-- [x] Email validation works correctly
-- [x] URL validation works correctly
-- [x] Security headers present in responses
-- [x] Error messages don't expose internal details
-- [x] Validation errors return 400 status
-- [x] Secret prompts excluded from responses
-
-### Ticket 4: Pre-Screening Questions
-
-- [x] Can add custom questions
-- [x] Can add suggested questions
-- [x] Drag-and-drop reordering works
-- [x] Can edit question text
-- [x] Can delete questions
-- [x] Dropdown options can be added/edited/deleted
-- [x] Dropdown options can be reordered
-- [x] Range type shows min/max inputs
-- [x] Validation requires at least 1 question
-- [x] Validation checks question text not empty
-- [x] Validation checks dropdown has options
-- [x] Questions display to applicants
-- [x] All questions marked as required
-- [x] Applicants must answer all questions
-- [x] Answers save to interview record
-- [x] Recruiters can view answers
-- [x] Questions included in career review step
-
----
-
 ## Known Limitations
 
 1. **Pipeline Builder:** Not included in current implementation (as per Ticket 2 requirements)
-2. **Team Members:** UI exists but backend integration may need verification
-3. **Question Limit:** No hard limit on number of pre-screening questions (consider adding max 20)
-4. **File Upload:** Pre-screening questions don't support file upload type yet
+2. **Question Limit:** No hard limit on number of pre-screening questions (consider adding max 20)
+3. **CV Upload:** Tested CV upload, it always throws an error saying CORE API URL doesn't have an `/upload-cv` endpoint.
 
 ---
 
 ## Future Enhancements
 
-1. **Question Templates:** Create reusable question templates
-2. **Conditional Logic:** Show/hide questions based on previous answers
-3. **Question Analytics:** Track which questions filter candidates most effectively
-4. **Bulk Import:** Import questions from CSV/JSON
-5. **Question Library:** Organization-wide shared question library
-6. **Answer Validation:** Custom validation rules per question (regex, min/max length)
-7. **Multi-language Support:** Questions and answers in multiple languages
-8. **Question Scoring:** Assign scores to answers for automatic ranking
+1. **Question Analytics:** Track which questions filter candidates most effectively
+2. **Answer Validation:** Custom validation rules per question (regex, min/max length)
+3. **Multi-language Support:** Questions and answers in multiple languages
+4. **Question Scoring:** Assign scores to answers for automatic ranking
 
 ---
 
@@ -728,29 +667,6 @@ preScreeningAnswers: {
 
 ---
 
-## Deployment Notes
-
-### Environment Variables Required
-
-Ensure all environment variables in `.env` are set in production:
-
-- MongoDB connection string
-- Firebase configuration (6 variables)
-- OpenAI API key
-- Core API URL
-
-### Database Indexes Recommended
-
-```javascript
-// careers collection
-db.careers.createIndex({ orgID: 1, status: 1 });
-db.careers.createIndex({ lastActivityAt: -1 });
-
-// interviews collection
-db.interviews.createIndex({ id: 1, email: 1 });
-db.interviews.createIndex({ orgID: 1 });
-```
-
 ### Security Headers (Already Implemented)
 
 All API responses include:
@@ -758,65 +674,3 @@ All API responses include:
 - `X-Content-Type-Options: nosniff`
 - `X-Frame-Options: DENY`
 - `X-XSS-Protection: 1; mode=block`
-
----
-
-## Support & Maintenance
-
-### Common Issues
-
-**Issue:** Draft not loading
-
-- **Solution:** Check browser localStorage, clear if corrupted
-
-**Issue:** Validation errors not showing
-
-- **Solution:** Verify `showValidationErrors` state is true
-
-**Issue:** Pre-screening questions not saving
-
-- **Solution:** Check MongoDB connection and API endpoint logs
-
-**Issue:** XSS sanitization too aggressive
-
-- **Solution:** Review allowed tags in `sanitize.ts`, add to whitelist if needed
-
-### Monitoring Recommendations
-
-1. **Error Tracking:** Monitor API errors for validation failures
-2. **Usage Analytics:** Track which pre-screening questions are most used
-3. **Performance:** Monitor localStorage size and API response times
-4. **Security:** Log and alert on validation failures (potential attacks)
-
----
-
-## Version History
-
-### v1.0.0 (Current)
-
-- ✅ Ticket 1: Development environment setup
-- ✅ Ticket 2: Segmented form with save progress
-- ✅ Ticket 3: XSS protection for add career endpoint
-- ✅ Ticket 4: Pre-screening questions feature
-
----
-
-## Contact & Resources
-
-### Documentation
-
-- Security Library: `src/lib/security/README.md`
-- Component Documentation: Inline JSDoc comments
-
-### Code Review Notes
-
-- All components use TypeScript for type safety
-- Consistent naming conventions followed
-- Error handling implemented throughout
-- Accessibility considerations in UI components
-
----
-
-**Last Updated:** November 10, 2025  
-**Status:** All tickets completed and tested  
-**Next Steps:** Deploy to staging environment for QA testing
