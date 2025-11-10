@@ -68,36 +68,17 @@ git log --oneline
 
 #### Environment Configuration
 
-**File Modified:** `.env`
+**New File (Not available in repo):** `.env`
 
-Required environment variables:
+Created new accounts on the following:
 
-```env
-# MongoDB
-MONGODB_URI=<your-mongodb-connection-string>
+# MongoDB: 
+1. Sign in or create new account here: https://account.mongodb.com/account/login
 
-# Firebase
-NEXT_PUBLIC_FIREBASE_API_KEY=<your-firebase-api-key>
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=<your-firebase-auth-domain>
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=<your-firebase-project-id>
+2. Create a new database to get the value for the following:
+MONGODB_URI=<your-mongodb-connection-string> 
 
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=<your-firebase-storage-bucket>
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=<your-firebase-messaging-sender-id>
-NEXT_PUBLIC_FIREBASE_APP_ID=<your-firebase-app-id>
-
-# OpenAI
-
-OPENAI_API_KEY=<your-openai-api-key>
-
-# Core API
-
-CORE_API_URL=https://jia-jvx-1a0eba0de6d.herokuapp.com
-
-```
-
-#### Database Structure
-**Database:** `jia-db`
-
+3. Create the following collections:
 **Collections:**
 - `affiliations` - User affiliations with organizations
 - `applicants` - Job applicants data
@@ -107,12 +88,41 @@ CORE_API_URL=https://jia-jvx-1a0eba0de6d.herokuapp.com
 - `members` - Organization members
 - `organizations` - Organization details
 
+# Firebase: 
+1. Sign in or create new account here: https://console.firebase.google.com/
+
+2. Create new project to get the values for the following:
+```env
+NEXT_PUBLIC_FIREBASE_API_KEY=<your-firebase-api-key>
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=<your-firebase-auth-domain>
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=<your-firebase-project-id>
+
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=<your-firebase-storage-bucket>
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=<your-firebase-messaging-sender-id>
+NEXT_PUBLIC_FIREBASE_APP_ID=<your-firebase-app-id>
+```
+
+3. Enable `Google` as `Sign-in Method` in `Authentication`.
+
+# OpenAI (Excluded since this needs a paid plan)
+
+1. Keep the following variable blank:
+```env
+OPENAI_API_KEY=<your-openai-api-key>
+```
+
+# Core API
+
+2. Set the value of the variable to the following:
+CORE_API_URL=https://jia-jvx-1a0eba0de6d.herokuapp.com
+
+#### Database Structure
+**Database:** `jia-db`
+
 #### Files Involved
 - `.env` - Environment configuration
 - `src/lib/mongoDB/mongoDB.ts` - MongoDB connection setup
 - `package.json` - Dependencies configuration
-
----
 
 ## Ticket 2: Segmented Career Form with Save Progress (2 SP)
 
