@@ -35,6 +35,7 @@ export default function CareerDetailsStep({
   const [currentUserRole, setCurrentUserRole] = useState("Job Owner");
   const [showCurrentUser, setShowCurrentUser] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [organizationMembers, setOrganizationMembers] = useState([]);
 
   useEffect(() => {
     setProvinceList(philippineCitiesAndProvinces.provinces);
@@ -57,6 +58,22 @@ export default function CareerDetailsStep({
 
     if (!formData.city && cities.length > 0) {
       updateFormData({ city: cities[0].name });
+    }
+
+    // Fetch organization members
+    if (user?.orgID) {
+      fetch("/api/fetch-members", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orgID: user.orgID }),
+      })
+        .then((res) => res.json())
+        .then((members) => {
+          setOrganizationMembers(members);
+        })
+        .catch((error) => {
+          console.error("Error fetching members:", error);
+        });
     }
   }, []);
 
@@ -611,9 +628,11 @@ export default function CareerDetailsStep({
                           setCurrentUserRole("Job Owner");
                         }
                       }}
-                      screeningSetting="Add member"
-                      settingList={[{ name: user?.name || "Current User" }]}
-                      placeholder="Add member"
+                      screeningSetting="Add Member"
+                      settingList={organizationMembers.map((member: any) => ({
+                        name: member.name || member.email,
+                      }))}
+                      placeholder="Add Member"
                     />
                   </div>
                 </div>
