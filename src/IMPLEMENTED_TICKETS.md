@@ -34,7 +34,7 @@ You can access the app here (Hosted & Deployed on Vercel):
 - [Known Limitations](#known-limitations)
 - [Future Enhancements](#future-enhancements)
 - [Technical Notes](#technical-notes)
-- [Best Practices & Code Organization](#best-practices-&-code-organization)
+- [Best Practices & Code Organization](#best-practices--code-organization)
 
 ---
 
