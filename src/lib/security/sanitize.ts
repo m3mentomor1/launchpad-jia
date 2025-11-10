@@ -52,13 +52,32 @@ export function sanitizeObject(obj: any, htmlFields: string[] = []): any {
 
   if (typeof obj === "object") {
     const sanitized: any = {};
+    // Fields that don't need sanitization (predefined constants)
+    const safeFields = [
+      "category",
+      "id",
+      "type",
+      "role",
+      "status",
+      "screeningSetting",
+      "workSetup",
+      "employmentType",
+      "country",
+      "province",
+      "currency",
+    ];
+
     for (const key in obj) {
       if (obj.hasOwnProperty(key)) {
         const value = obj[key];
 
         if (typeof value === "string") {
+          // Skip sanitization for safe predefined fields
+          if (safeFields.includes(key)) {
+            sanitized[key] = value;
+          }
           // Check if this field should allow HTML
-          if (htmlFields.includes(key)) {
+          else if (htmlFields.includes(key)) {
             sanitized[key] = sanitizeHTML(value);
           } else if (key.toLowerCase().includes("email")) {
             sanitized[key] = sanitizeEmail(value);
