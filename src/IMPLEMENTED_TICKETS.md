@@ -75,10 +75,13 @@ Created new accounts on the following:
 # MongoDB: 
 1. Sign in or create new account here: https://account.mongodb.com/account/login
 
-2. Create a new database to get the value for the following:
+2. Create a new cluster to get the value for the following:
 MONGODB_URI=<your-mongodb-connection-string> 
 
 3. Create the following collections:
+
+**Database:** `jia-db`
+
 **Collections:**
 - `affiliations` - User affiliations with organizations
 - `applicants` - Job applicants data
@@ -114,10 +117,9 @@ OPENAI_API_KEY=<your-openai-api-key>
 # Core API
 
 2. Set the value of the variable to the following:
+```env
 CORE_API_URL=https://jia-jvx-1a0eba0de6d.herokuapp.com
-
-#### Database Structure
-**Database:** `jia-db`
+```
 
 #### Files Involved
 - `.env` - Environment configuration
