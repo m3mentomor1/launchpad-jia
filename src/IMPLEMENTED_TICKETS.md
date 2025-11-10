@@ -354,8 +354,8 @@ Security measures implemented:
 
 ```json
 {
-  "isomorphic-dompurify": "^2.x.x",
-  "validator": "^13.x.x"
+  "isomorphic-dompurify": "^2.31.0",
+  "validator": "^13.15.20"
 }
 ```
 
