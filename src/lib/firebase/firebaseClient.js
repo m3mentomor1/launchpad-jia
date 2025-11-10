@@ -70,6 +70,15 @@ export async function signInWithGoogle(type) {
         console.log(res.data);
       }
 
+      // Update localStorage with complete user data including orgID
+      localStorage.user = JSON.stringify({
+        email: res.data.email,
+        image: res.data.image,
+        name: res.data.name,
+        role: res.data.role,
+        orgID: res.data.orgID,
+      });
+
       toast.dismiss("loading-toast");
 
       successToast("Login successful");
