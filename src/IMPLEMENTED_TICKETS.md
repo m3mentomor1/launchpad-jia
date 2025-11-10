@@ -604,7 +604,6 @@ preScreeningAnswers: {
 
 - [x] MongoDB connection successful
 - [x] Firebase authentication working
-- [x] OpenAI API accessible
 - [x] Application builds without errors
 - [x] Core API URL missing `/upload-cv` endpoint
 
