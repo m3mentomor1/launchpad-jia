@@ -6,7 +6,6 @@ This document provides comprehensive documentation for all implemented tickets i
 
 You can access the app here (Hosted & Deployed on Vercel):
 
-
 ## Table of Contents
 
 ### Tickets
@@ -72,12 +71,14 @@ git log --oneline
 
 Created new accounts on the following:
 
-# MongoDB: 
+# MongoDB:
+
 1. Sign in or create new account here: https://account.mongodb.com/account/login
 
 2. Create a new cluster to get the value for the following:
+
 ```env
-MONGODB_URI=<your-mongodb-connection-string> 
+MONGODB_URI=<your-mongodb-connection-string>
 ```
 
 4. Create the following collections:
@@ -85,6 +86,7 @@ MONGODB_URI=<your-mongodb-connection-string>
 **Database:** `jia-db`
 
 **Collections:**
+
 - `affiliations` - User affiliations with organizations
 - `applicants` - Job applicants data
 - `careers` - Job postings/career opportunities
@@ -93,10 +95,12 @@ MONGODB_URI=<your-mongodb-connection-string>
 - `members` - Organization members
 - `organizations` - Organization details
 
-# Firebase: 
+# Firebase:
+
 1. Sign in or create new account here: https://console.firebase.google.com/
 
 2. Create new project to get the values for the following:
+
 ```env
 NEXT_PUBLIC_FIREBASE_API_KEY=<your-firebase-api-key>
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=<your-firebase-auth-domain>
@@ -112,6 +116,7 @@ NEXT_PUBLIC_FIREBASE_APP_ID=<your-firebase-app-id>
 # OpenAI (Excluded since this needs a paid plan)
 
 1. Keep the following variable blank:
+
 ```env
 OPENAI_API_KEY=<your-openai-api-key>
 ```
@@ -119,11 +124,13 @@ OPENAI_API_KEY=<your-openai-api-key>
 # Core API
 
 2. Set the value of the variable to the following:
+
 ```env
 CORE_API_URL=https://jia-jvx-1a0eba0de6d.herokuapp.com
 ```
 
 #### Files Involved
+
 - `.env` - Environment configuration
 - `src/lib/mongoDB/mongoDB.ts` - MongoDB connection setup
 - `package.json` - Dependencies configuration
@@ -133,6 +140,7 @@ CORE_API_URL=https://jia-jvx-1a0eba0de6d.herokuapp.com
 ### Status: ✅ COMPLETED
 
 ### Requirements
+
 - Update career form to be a segmented form
 - User must be able to save current progress and return to last step
 - Pipeline builder is NOT included in this ticket
@@ -730,3 +738,683 @@ All API responses include:
 - `X-Content-Type-Options: nosniff`
 - `X-Frame-Options: DENY`
 - `X-XSS-Protection: 1; mode=block`
+
+---
+
+# Best Practices & Code Organization
+
+## Overview
+
+This section outlines the best practices, code organization standards, and reusable structure patterns demonstrated in the implementation of **Tickets 2, 3, and 4**. These patterns ensure maintainability, scalability, and code quality.
+
+---
+
+## ✅ Implemented Best Practices
+
+### 1. **Segmented Form Architecture (Ticket 2)**
+
+- **Step-Based Components**: Form broken into 4 modular, reusable steps
+- **Single Source of Truth**: Centralized state management in parent component
+- **Progressive Disclosure**: Users see only relevant information per step
+- **Draft Management**: LocalStorage integration for save/resume functionality
+- **Step Validation**: Each step validates before allowing progression
+
+### 2. **Security-First Approach (Ticket 3)**
+
+- **Dedicated Security Module**: `src/lib/security/sanitize.ts` provides reusable XSS protection
+- **Input Validation**: Comprehensive validation functions for all user inputs
+- **Sanitization Functions**: Reusable sanitization for HTML, text, email, and URLs
+- **Security Headers**: Consistent security headers across all API responses
+- **Sensitive Data Protection**: Secret prompts excluded from API responses
+
+### 3. **Dynamic Form Components (Ticket 4)**
+
+- **Flexible Question Types**: Support for dropdown, text, and range inputs
+- **Drag-and-Drop Reordering**: Intuitive question management
+- **Validation Framework**: Inline validation with clear error messages
+- **Data Flow**: Clean separation between recruiter input and applicant response
+
+### 4. **Type Safety**
+
+- **TypeScript Interfaces**: Clear interfaces for form data (`CareerFormData`)
+- **Type Definitions**: Proper typing for all functions and components
+- **Strict Validation**: Type checking at compile time and runtime
+
+---
+
+## 📋 Code Organization Standards
+
+### Directory Structure Used
+
+```
+src/
+├── app/
+│   └── api/
+│       ├── add-career/route.tsx        # Ticket 3: XSS-protected endpoint
+│       ├── update-career/route.tsx     # Ticket 3: XSS-protected endpoint
+│       └── update-interview/route.tsx  # Ticket 4: Save pre-screening answers
+├── lib/
+│   ├── components/
+│   │   └── CareerComponents/
+│   │       ├── SegmentedCareerForm.tsx              # Ticket 2: Main form
+│   │       ├── CareerFormSteps/
+│   │       │   ├── CareerDetailsStep.tsx            # Ticket 2: Step 1
+│   │       │   ├── CVReviewStep.tsx                 # Ticket 2 & 4: Step 2
+│   │       │   ├── AIInterviewStep.tsx              # Ticket 2: Step 3
+│   │       │   ├── ReviewCareerStep.tsx             # Ticket 2: Step 4
+│   │       │   └── StepIndicator.tsx                # Ticket 2: Progress UI
+│   │       ├── RichTextEditor.tsx                   # Ticket 2: Job description
+│   │       ├── CustomDropdown.tsx                   # Ticket 2: Dropdown UI
+│   │       └── CandidateMenu.tsx                    # Ticket 4: View answers
+│   ├── security/
+│   │   ├── sanitize.ts                              # Ticket 3: Security functions
+│   │   └── README.md                                # Ticket 3: Security docs
+│   └── styles/
+│       └── globals.scss                             # Ticket 4: Drag-drop styles
+```
+
+### Naming Conventions Applied
+
+1. **Components**: PascalCase (e.g., `SegmentedCareerForm.tsx`, `CVReviewStep.tsx`)
+2. **Utilities**: camelCase (e.g., `sanitizeHTML`, `validateCareerData`)
+3. **Constants**: UPPER_SNAKE_CASE (e.g., `STORAGE_KEY`, `STEPS`)
+4. **Types/Interfaces**: PascalCase (e.g., `CareerFormData`)
+5. **Files**: Descriptive names indicating purpose (e.g., `StepIndicator.tsx`, `sanitize.ts`)
+
+---
+
+## 🔧 Reusable Patterns Implemented
+
+### 1. LocalStorage Draft Management (Ticket 2)
+
+**Pattern**: Save form progress to localStorage for resume functionality
+
+**Implementation** (`src/lib/components/CareerComponents/SegmentedCareerForm.tsx`):
+
+```typescript
+const STORAGE_KEY = "career_form_draft";
+
+// Save draft on step change
+const saveDraft = () => {
+  if (formType === "add") {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ formData, step: currentStep })
+    );
+  }
+};
+
+// Load draft on mount
+useEffect(() => {
+  if (formType === "add" && !career) {
+    const savedDraft = localStorage.getItem(STORAGE_KEY);
+    if (savedDraft) {
+      const { formData: savedFormData, step } = JSON.parse(savedDraft);
+      setFormData(savedFormData);
+      setCurrentStep(step);
+    }
+  }
+}, [formType, career]);
+
+// Clear draft after successful save
+localStorage.removeItem(STORAGE_KEY);
+```
+
+**Benefits**:
+
+- Users don't lose work if they navigate away
+- Reduces server load (no auto-save API calls)
+- Simple implementation with browser APIs
+
+### 2. Security Functions (Ticket 3)
+
+**Location**: `src/lib/security/sanitize.ts`
+
+**Implemented Functions**:
+
+```typescript
+import {
+  sanitizeHTML, // For rich text content (job descriptions)
+  sanitizeText, // For plain text fields
+  sanitizeEmail, // For email validation
+  sanitizeURL, // For URL validation
+  sanitizeObject, // For recursive object sanitization
+  validateCareerData, // For data validation
+} from "@/lib/security/sanitize";
+```
+
+**Usage in API Routes** (`src/app/api/add-career/route.tsx`):
+
+```typescript
+export async function POST(request: NextRequest) {
+  const rawData = await request.json();
+
+  // 1. Validate data structure
+  const validation = validateCareerData(rawData);
+  if (!validation.valid) {
+    return NextResponse.json(
+      { error: "Validation failed", details: validation.errors },
+      { status: 400 }
+    );
+  }
+
+  // 2. Sanitize all input - description allows HTML, others are plain text
+  const sanitizedData = sanitizeObject(rawData, ["description"]);
+
+  // 3. Process sanitized data
+  // ... save to database
+
+  // 4. Return response with security headers
+  return NextResponse.json(
+    { success: true },
+    {
+      status: 200,
+      headers: {
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "DENY",
+        "X-XSS-Protection": "1; mode=block",
+      },
+    }
+  );
+}
+```
+
+**Key Principle**: Always validate first, then sanitize, then process
+
+### 3. Step-Based Form Pattern (Ticket 2)
+
+**Pattern**: Break complex forms into manageable steps with centralized state
+
+**Implementation** (`src/lib/components/CareerComponents/SegmentedCareerForm.tsx`):
+
+```typescript
+// 1. Define steps
+const STEPS = [
+  { id: 1, name: "Career Details & Team Access", key: "details" },
+  { id: 2, name: "CV Review & Pre-screening", key: "cv-review" },
+  { id: 3, name: "AI Interview Setup", key: "interview" },
+  { id: 4, name: "Review Career", key: "review" },
+];
+
+// 2. Centralized state management
+const [formData, setFormData] = useState<CareerFormData>(initialData);
+const [currentStep, setCurrentStep] = useState(1);
+
+// 3. Update function passed to all steps
+const updateFormData = (updates: Partial<CareerFormData>) => {
+  setFormData((prev) => ({ ...prev, ...updates }));
+};
+
+// 4. Step validation
+const isStepValid = (step: number): boolean => {
+  switch (step) {
+    case 1:
+      return (
+        formData.jobTitle.trim().length > 0 &&
+        formData.description.trim().length > 0
+      );
+    case 2:
+      return formData.preScreeningQuestions?.length > 0;
+    // ... other steps
+  }
+};
+
+// 5. Render current step
+const renderStep = () => {
+  switch (currentStep) {
+    case 1:
+      return (
+        <CareerDetailsStep
+          formData={formData}
+          updateFormData={updateFormData}
+          validationErrors={validationErrors}
+        />
+      );
+    // ... other steps
+  }
+};
+```
+
+**Benefits**:
+
+- Single source of truth for form state
+- Easy to add/remove steps
+- Reusable step components
+- Centralized validation
+- Better UX with progressive disclosure
+
+### 4. Dynamic Question Management (Ticket 4)
+
+**Pattern**: Flexible question builder with multiple input types
+
+**Implementation** (`src/lib/components/CareerComponents/CareerFormSteps/CVReviewStep.tsx`):
+
+```typescript
+// Question structure
+interface PreScreeningQuestion {
+  id: string;
+  question: string;
+  type: "dropdown" | "text" | "range";
+  options?: string[]; // For dropdown
+  rangeMin?: string; // For range
+  rangeMax?: string; // For range
+}
+
+// Add question
+const addQuestion = (type: string) => {
+  const newQuestion: PreScreeningQuestion = {
+    id: Date.now().toString(),
+    question: "",
+    type: type as "dropdown" | "text" | "range",
+    options: type === "dropdown" ? [""] : undefined,
+  };
+  updateFormData({
+    preScreeningQuestions: [
+      ...(formData.preScreeningQuestions || []),
+      newQuestion,
+    ],
+  });
+};
+
+// Update question
+const updateQuestion = (id: string, updates: Partial<PreScreeningQuestion>) => {
+  const updated = formData.preScreeningQuestions?.map((q) =>
+    q.id === id ? { ...q, ...updates } : q
+  );
+  updateFormData({ preScreeningQuestions: updated });
+};
+
+// Delete question
+const deleteQuestion = (id: string) => {
+  const filtered = formData.preScreeningQuestions?.filter((q) => q.id !== id);
+  updateFormData({ preScreeningQuestions: filtered });
+};
+```
+
+**Benefits**:
+
+- Flexible question types
+- Easy to extend with new types
+- Clean data structure
+- Reusable pattern for other forms
+
+---
+
+## 🚫 What NOT to Do (Stable Codebase)
+
+### ❌ Avoid Unnecessary Refactors
+
+1. **Don't Remove Base Modules**: The existing codebase has stable utilities and components
+2. **Don't Rename Core Files**: Maintain consistency with existing naming conventions
+3. **Don't Change Working Patterns**: Extend patterns (like the step-based form) rather than replace them
+4. **Don't Duplicate Security Code**: Use `src/lib/security/sanitize.ts` for all sanitization needs
+
+### ❌ Avoid Breaking Changes
+
+1. **Don't Modify Shared Components**: Components like `RichTextEditor` and `CustomDropdown` are used across features
+2. **Don't Change API Contracts**: The add-career and update-career endpoints have established contracts
+3. **Don't Alter Database Schemas**: The `careers` and `interviews` collections have defined structures
+4. **Don't Skip Validation**: Always validate and sanitize user input as demonstrated in Ticket 3
+
+---
+
+## ✅ Best Practices Checklist
+
+### Before Adding New Features
+
+- [ ] Review this document for similar patterns
+- [ ] Check if step-based form pattern applies (Ticket 2)
+- [ ] Identify if security sanitization is needed (Ticket 3)
+- [ ] Plan component structure (separate steps if complex)
+- [ ] Define TypeScript interfaces early
+
+### During Development
+
+- [ ] Follow the step-based form pattern for multi-step flows (Ticket 2)
+- [ ] Use `sanitizeObject()` for all user input (Ticket 3)
+- [ ] Implement localStorage for draft functionality when appropriate (Ticket 2)
+- [ ] Add inline validation with clear error messages (Ticket 2 & 4)
+- [ ] Use consistent naming conventions (PascalCase for components, camelCase for functions)
+- [ ] Keep components focused (single responsibility)
+
+### Code Quality
+
+- [ ] TypeScript interfaces for all props and state (see `CareerFormData`)
+- [ ] Consistent formatting and indentation
+- [ ] Constants for magic strings (e.g., `STORAGE_KEY`, `STEPS`)
+- [ ] Meaningful variable names (e.g., `preScreeningQuestions`, not `questions2`)
+- [ ] Comments only for complex logic (most code should be self-documenting)
+
+### Security (Ticket 3 Requirements)
+
+- [ ] Sanitize all user inputs using `sanitizeObject()`
+- [ ] Validate data structure using `validateCareerData()` or similar
+- [ ] Add security headers to all API responses
+- [ ] Never expose sensitive data (e.g., `cvSecretPrompt`, `aiSecretPrompt`)
+- [ ] Validate on both client (UX) and server (security)
+
+### User Experience
+
+- [ ] Show validation errors inline with red borders (Ticket 2)
+- [ ] Provide clear error messages (Ticket 2)
+- [ ] Save progress automatically (localStorage pattern from Ticket 2)
+- [ ] Allow users to navigate back to completed steps (Ticket 2)
+- [ ] Show loading states during async operations (Ticket 2)
+
+---
+
+## 🎯 Key Principles
+
+### 1. DRY (Don't Repeat Yourself)
+
+- Security functions centralized in `src/lib/security/sanitize.ts` (Ticket 3)
+- Step components reuse the same props interface (Ticket 2)
+- Question management logic reusable for other forms (Ticket 4)
+
+### 2. Single Responsibility
+
+- Each step component handles only its section (Ticket 2)
+- Security module only handles sanitization/validation (Ticket 3)
+- Parent form manages state, children manage UI (Ticket 2)
+
+### 3. Composition Over Inheritance
+
+- Step-based form composed of smaller step components (Ticket 2)
+- Question types composed with shared base structure (Ticket 4)
+
+### 4. Fail Fast
+
+- Validate before allowing step progression (Ticket 2)
+- Validate API input before processing (Ticket 3)
+- Show errors immediately to users (Ticket 2 & 4)
+
+### 5. Progressive Enhancement
+
+- Start with basic form, add steps incrementally (Ticket 2)
+- Add question types one at a time (Ticket 4)
+- Maintain backward compatibility with existing data
+
+---
+
+## 📊 Code Review Checklist
+
+### Functionality
+
+- [ ] Feature works as expected
+- [ ] Edge cases handled (empty inputs, invalid data)
+- [ ] Error states handled gracefully
+- [ ] Loading states implemented
+
+### Code Quality
+
+- [ ] Follows step-based pattern (if applicable)
+- [ ] Uses security functions from Ticket 3
+- [ ] Proper TypeScript types
+- [ ] Clear variable/function names
+- [ ] No code duplication
+
+### Security (Critical for Ticket 3)
+
+- [ ] Input sanitization implemented
+- [ ] Validation on client and server
+- [ ] No sensitive data exposed
+- [ ] Security headers present in API responses
+
+### User Experience
+
+- [ ] Validation errors shown inline
+- [ ] Clear error messages
+- [ ] Draft functionality (if applicable)
+- [ ] Loading indicators during async operations
+
+---
+
+# Quick Reference Guide
+
+## 🚀 Common Patterns
+
+### Security Pattern (Ticket 3)
+
+**Always Use in API Routes**:
+
+```typescript
+import { sanitizeObject, validateCareerData } from "@/lib/security/sanitize";
+
+export async function POST(request: NextRequest) {
+  const rawData = await request.json();
+
+  // 1. Validate
+  const validation = validateCareerData(rawData);
+  if (!validation.valid) {
+    return NextResponse.json(
+      { error: "Validation failed", details: validation.errors },
+      { status: 400 }
+    );
+  }
+
+  // 2. Sanitize (description allows HTML, others are plain text)
+  const sanitizedData = sanitizeObject(rawData, ["description"]);
+
+  // 3. Process
+  // ... save to database
+
+  // 4. Return with security headers
+  return NextResponse.json(
+    { success: true },
+    {
+      status: 200,
+      headers: {
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "DENY",
+        "X-XSS-Protection": "1; mode=block",
+      },
+    }
+  );
+}
+```
+
+### Step Validation Pattern (Ticket 2)
+
+```typescript
+const isStepValid = (step: number): boolean => {
+  switch (step) {
+    case 1:
+      return (
+        formData.jobTitle.trim().length > 0 &&
+        formData.description.trim().length > 0
+      );
+    case 2:
+      return formData.preScreeningQuestions?.length > 0;
+    case 3:
+      const totalQuestions = formData.questions.reduce(
+        (sum, q) => sum + q.questions.length,
+        0
+      );
+      return totalQuestions >= 5;
+    case 4:
+      return true;
+    default:
+      return false;
+  }
+};
+```
+
+### LocalStorage Draft Pattern (Ticket 2)
+
+```typescript
+const STORAGE_KEY = "career_form_draft";
+
+// Save draft
+const saveDraft = () => {
+  if (formType === "add") {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ formData, step: currentStep })
+    );
+  }
+};
+
+// Load draft
+useEffect(() => {
+  if (formType === "add" && !career) {
+    const savedDraft = localStorage.getItem(STORAGE_KEY);
+    if (savedDraft) {
+      try {
+        const { formData: savedFormData, step } = JSON.parse(savedDraft);
+        setFormData(savedFormData);
+        setCurrentStep(step);
+      } catch (error) {
+        console.error("Failed to load draft:", error);
+      }
+    }
+  }
+}, [formType, career]);
+
+// Clear draft after successful save
+localStorage.removeItem(STORAGE_KEY);
+```
+
+### Dynamic Question Management (Ticket 4)
+
+```typescript
+// Add question
+const addQuestion = (type: "dropdown" | "text" | "range") => {
+  const newQuestion = {
+    id: Date.now().toString(),
+    question: "",
+    type: type,
+    options: type === "dropdown" ? [""] : undefined,
+    rangeMin: type === "range" ? "" : undefined,
+    rangeMax: type === "range" ? "" : undefined,
+  };
+
+  updateFormData({
+    preScreeningQuestions: [
+      ...(formData.preScreeningQuestions || []),
+      newQuestion,
+    ],
+  });
+};
+
+// Update question
+const updateQuestionText = (id: string, text: string) => {
+  const updated = formData.preScreeningQuestions?.map((q) =>
+    q.id === id ? { ...q, question: text } : q
+  );
+  updateFormData({ preScreeningQuestions: updated });
+};
+
+// Delete question
+const deleteQuestion = (id: string) => {
+  if (confirm("Are you sure you want to delete this question?")) {
+    const filtered = formData.preScreeningQuestions?.filter((q) => q.id !== id);
+    updateFormData({ preScreeningQuestions: filtered });
+  }
+};
+```
+
+### Inline Validation Pattern (Ticket 2)
+
+```typescript
+const [showValidationErrors, setShowValidationErrors] = useState(false);
+const [validationErrors, setValidationErrors] = useState<{
+  [key: string]: string;
+}>({});
+
+const collectValidationErrors = (step: number) => {
+  const errors: { [key: string]: string } = {};
+
+  switch (step) {
+    case 1:
+      if (!formData.jobTitle.trim())
+        errors.jobTitle = "This is a required field.";
+      if (!formData.description.trim())
+        errors.description = "This is a required field.";
+      break;
+    case 2:
+      if (
+        !formData.preScreeningQuestions ||
+        formData.preScreeningQuestions.length === 0
+      ) {
+        errors.preScreeningQuestions =
+          "Please add at least 1 pre-screening question";
+      }
+      break;
+  }
+
+  setValidationErrors(errors);
+};
+
+// Display in JSX
+<input
+  value={formData.jobTitle}
+  onChange={(e) => updateFormData({ jobTitle: e.target.value })}
+  style={{
+    border:
+      showValidationErrors && validationErrors.jobTitle
+        ? "1px solid red"
+        : "1px solid #D5D7DA",
+  }}
+/>;
+{
+  showValidationErrors && validationErrors.jobTitle && (
+    <span style={{ color: "red", fontSize: "12px" }}>
+      {validationErrors.jobTitle}
+    </span>
+  );
+}
+```
+
+---
+
+## 🎯 Common Tasks
+
+### Adding a New Step to the Form
+
+1. Add step to `STEPS` array
+2. Create new step component in `CareerFormSteps/`
+3. Add validation case in `isStepValid()`
+4. Add render case in `renderStep()`
+5. Update `collectValidationErrors()` if needed
+
+### Adding a New Question Type
+
+1. Update `PreScreeningQuestion` interface
+2. Add type to question builder UI
+3. Add validation logic for new type
+4. Update applicant answer UI
+5. Update answer storage logic
+
+### Adding Security to New API Endpoint
+
+1. Import `sanitizeObject` and `validateCareerData`
+2. Validate input first
+3. Sanitize input (specify HTML-allowed fields)
+4. Process sanitized data
+5. Return with security headers
+
+---
+
+## 🔍 Debugging Tips
+
+### Common Issues
+
+| Issue                  | Solution                                     |
+| ---------------------- | -------------------------------------------- |
+| Draft not loading      | Check localStorage key matches `STORAGE_KEY` |
+| Validation not showing | Ensure `showValidationErrors` is true        |
+| Step won't advance     | Check `isStepValid()` for current step       |
+| API returns 400        | Check validation errors in response          |
+| XSS not blocked        | Ensure using `sanitizeObject()`              |
+
+### Check These First
+
+1. Browser console for errors
+2. Network tab for API failures
+3. localStorage for draft data
+4. Validation errors state
+5. MongoDB connection
+
+---
+
+**Remember**: These patterns were proven effective in the implementation of Tickets 2, 3, and 4. When building new features, reference these implementations as examples of excellent code organization and reusable structure.
