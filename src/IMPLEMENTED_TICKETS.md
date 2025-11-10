@@ -739,7 +739,7 @@ All API responses include:
 
 ---
 
-# Best Practices & Code Organization
+## Best Practices & Code Organization
 
 ## Overview
 
