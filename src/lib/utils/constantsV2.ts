@@ -3,9 +3,9 @@ const jobOpeningsOriginPath = "/job-openings";
 const dashboardOriginPath = "/dashboard";
 
 export const pathConstants = {
-  employee: process.env.NEXT_PUBLIC_APP_URL || window.location.origin,
-  employer: process.env.NEXT_PUBLIC_APP_URL || window.location.origin,
-  whitecloak: process.env.NEXT_PUBLIC_APP_URL || window.location.origin,
+  employee: typeof window !== "undefined" ? window.location.origin : "",
+  employer: typeof window !== "undefined" ? window.location.origin : "",
+  whitecloak: typeof window !== "undefined" ? window.location.origin : "",
   home: originPath,
   jobOpenings: jobOpeningsOriginPath,
   dashboard: dashboardOriginPath,
