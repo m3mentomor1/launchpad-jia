@@ -76,9 +76,11 @@ Created new accounts on the following:
 1. Sign in or create new account here: https://account.mongodb.com/account/login
 
 2. Create a new cluster to get the value for the following:
+```env
 MONGODB_URI=<your-mongodb-connection-string> 
+```
 
-3. Create the following collections:
+4. Create the following collections:
 
 **Database:** `jia-db`
 
