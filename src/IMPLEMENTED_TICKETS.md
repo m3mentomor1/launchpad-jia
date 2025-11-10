@@ -6,7 +6,6 @@ This document provides comprehensive documentation for all implemented tickets i
 
 You can access the app here (Hosted & Deployed on Vercel):
 
-
 ## Table of Contents
 
 ### Tickets
@@ -35,9 +34,7 @@ You can access the app here (Hosted & Deployed on Vercel):
 - [Known Limitations](#known-limitations)
 - [Future Enhancements](#future-enhancements)
 - [Technical Notes](#technical-notes)
-- [Deployment Notes](#deployment-notes)
-- [Support & Maintenance](#support--maintenance)
-- [Version History](#version-history)
+- [Best Practices & Code Organization](#best-practices--code-organization)
 
 ---
 
@@ -72,12 +69,14 @@ git log --oneline
 
 Created new accounts on the following:
 
-# MongoDB: 
+# MongoDB:
+
 1. Sign in or create new account here: https://account.mongodb.com/account/login
 
 2. Create a new cluster to get the value for the following:
+
 ```env
-MONGODB_URI=<your-mongodb-connection-string> 
+MONGODB_URI=<your-mongodb-connection-string>
 ```
 
 4. Create the following collections:
@@ -85,6 +84,7 @@ MONGODB_URI=<your-mongodb-connection-string>
 **Database:** `jia-db`
 
 **Collections:**
+
 - `affiliations` - User affiliations with organizations
 - `applicants` - Job applicants data
 - `careers` - Job postings/career opportunities
@@ -93,10 +93,12 @@ MONGODB_URI=<your-mongodb-connection-string>
 - `members` - Organization members
 - `organizations` - Organization details
 
-# Firebase: 
+# Firebase:
+
 1. Sign in or create new account here: https://console.firebase.google.com/
 
 2. Create new project to get the values for the following:
+
 ```env
 NEXT_PUBLIC_FIREBASE_API_KEY=<your-firebase-api-key>
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=<your-firebase-auth-domain>
@@ -112,6 +114,7 @@ NEXT_PUBLIC_FIREBASE_APP_ID=<your-firebase-app-id>
 # OpenAI (Excluded since this needs a paid plan)
 
 1. Keep the following variable blank:
+
 ```env
 OPENAI_API_KEY=<your-openai-api-key>
 ```
@@ -119,11 +122,13 @@ OPENAI_API_KEY=<your-openai-api-key>
 # Core API
 
 2. Set the value of the variable to the following:
+
 ```env
 CORE_API_URL=https://jia-jvx-1a0eba0de6d.herokuapp.com
 ```
 
 #### Files Involved
+
 - `.env` - Environment configuration
 - `src/lib/mongoDB/mongoDB.ts` - MongoDB connection setup
 - `package.json` - Dependencies configuration
@@ -133,6 +138,7 @@ CORE_API_URL=https://jia-jvx-1a0eba0de6d.herokuapp.com
 ### Status: ✅ COMPLETED
 
 ### Requirements
+
 - Update career form to be a segmented form
 - User must be able to save current progress and return to last step
 - Pipeline builder is NOT included in this ticket
@@ -730,3 +736,302 @@ All API responses include:
 - `X-Content-Type-Options: nosniff`
 - `X-Frame-Options: DENY`
 - `X-XSS-Protection: 1; mode=block`
+
+---
+
+## Best Practices & Code Organization
+
+## Overview
+
+This section outlines the best practices, code organization standards, and reusable structure patterns demonstrated in the implementation of **Tickets 2, 3, and 4**. These patterns ensure maintainability, scalability, and code quality.
+
+---
+
+## ✅ Implemented Best Practices
+
+### 1. **Segmented Form Architecture (Ticket 2)**
+
+- **Step-Based Components**: Form broken into 4 modular, reusable steps
+- **Single Source of Truth**: Centralized state management in parent component
+- **Progressive Disclosure**: Users see only relevant information per step
+- **Draft Management**: LocalStorage integration for save/resume functionality
+- **Step Validation**: Each step validates before allowing progression
+
+### 2. **Security-First Approach (Ticket 3)**
+
+- **Dedicated Security Module**: `src/lib/security/sanitize.ts` provides reusable XSS protection
+- **Input Validation**: Comprehensive validation functions for all user inputs
+- **Sanitization Functions**: Reusable sanitization for HTML, text, email, and URLs
+- **Security Headers**: Consistent security headers across all API responses
+- **Sensitive Data Protection**: Secret prompts excluded from API responses
+
+### 3. **Dynamic Form Components (Ticket 4)**
+
+- **Flexible Question Types**: Support for dropdown, text, and range inputs
+- **Drag-and-Drop Reordering**: Intuitive question management
+- **Validation Framework**: Inline validation with clear error messages
+- **Data Flow**: Clean separation between recruiter input and applicant response
+
+### 4. **Type Safety**
+
+- **TypeScript Interfaces**: Clear interfaces for form data (`CareerFormData`)
+- **Type Definitions**: Proper typing for all functions and components
+- **Strict Validation**: Type checking at compile time and runtime
+
+---
+
+## 📋 Code Organization Standards
+
+### Directory Structure Used
+
+```
+src/
+├── app/
+│   └── api/
+│       ├── add-career/route.tsx        # Ticket 3: XSS-protected endpoint
+│       ├── update-career/route.tsx     # Ticket 3: XSS-protected endpoint
+│       └── update-interview/route.tsx  # Ticket 4: Save pre-screening answers
+├── lib/
+│   ├── components/
+│   │   └── CareerComponents/
+│   │       ├── SegmentedCareerForm.tsx              # Ticket 2: Main form
+│   │       ├── CareerFormSteps/
+│   │       │   ├── CareerDetailsStep.tsx            # Ticket 2: Step 1
+│   │       │   ├── CVReviewStep.tsx                 # Ticket 2 & 4: Step 2
+│   │       │   ├── AIInterviewStep.tsx              # Ticket 2: Step 3
+│   │       │   ├── ReviewCareerStep.tsx             # Ticket 2: Step 4
+│   │       │   └── StepIndicator.tsx                # Ticket 2: Progress UI
+│   │       ├── RichTextEditor.tsx                   # Ticket 2: Job description
+│   │       ├── CustomDropdown.tsx                   # Ticket 2: Dropdown UI
+│   │       └── CandidateMenu.tsx                    # Ticket 4: View answers
+│   ├── security/
+│   │   ├── sanitize.ts                              # Ticket 3: Security functions
+│   │   └── README.md                                # Ticket 3: Security docs
+│   └── styles/
+│       └── globals.scss                             # Ticket 4: Drag-drop styles
+```
+
+### Naming Conventions Applied
+
+1. **Components**: PascalCase (e.g., `SegmentedCareerForm.tsx`, `CVReviewStep.tsx`)
+2. **Utilities**: camelCase (e.g., `sanitizeHTML`, `validateCareerData`)
+3. **Constants**: UPPER_SNAKE_CASE (e.g., `STORAGE_KEY`, `STEPS`)
+4. **Types/Interfaces**: PascalCase (e.g., `CareerFormData`)
+5. **Files**: Descriptive names indicating purpose (e.g., `StepIndicator.tsx`, `sanitize.ts`)
+
+---
+
+## 🔧 Reusable Patterns Implemented
+
+### 1. LocalStorage Draft Management (Ticket 2)
+
+**Pattern**: Save form progress to localStorage for resume functionality
+
+**Implementation** (`src/lib/components/CareerComponents/SegmentedCareerForm.tsx`):
+
+```typescript
+const STORAGE_KEY = "career_form_draft";
+
+// Save draft on step change
+const saveDraft = () => {
+  if (formType === "add") {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ formData, step: currentStep })
+    );
+  }
+};
+
+// Load draft on mount
+useEffect(() => {
+  if (formType === "add" && !career) {
+    const savedDraft = localStorage.getItem(STORAGE_KEY);
+    if (savedDraft) {
+      const { formData: savedFormData, step } = JSON.parse(savedDraft);
+      setFormData(savedFormData);
+      setCurrentStep(step);
+    }
+  }
+}, [formType, career]);
+
+// Clear draft after successful save
+localStorage.removeItem(STORAGE_KEY);
+```
+
+**Benefits**:
+
+- Users don't lose work if they navigate away
+- Reduces server load (no auto-save API calls)
+- Simple implementation with browser APIs
+
+### 2. Security Functions (Ticket 3)
+
+**Location**: `src/lib/security/sanitize.ts`
+
+**Implemented Functions**:
+
+```typescript
+import {
+  sanitizeHTML, // For rich text content (job descriptions)
+  sanitizeText, // For plain text fields
+  sanitizeEmail, // For email validation
+  sanitizeURL, // For URL validation
+  sanitizeObject, // For recursive object sanitization
+  validateCareerData, // For data validation
+} from "@/lib/security/sanitize";
+```
+
+**Usage in API Routes** (`src/app/api/add-career/route.tsx`):
+
+```typescript
+export async function POST(request: NextRequest) {
+  const rawData = await request.json();
+
+  // 1. Validate data structure
+  const validation = validateCareerData(rawData);
+  if (!validation.valid) {
+    return NextResponse.json(
+      { error: "Validation failed", details: validation.errors },
+      { status: 400 }
+    );
+  }
+
+  // 2. Sanitize all input - description allows HTML, others are plain text
+  const sanitizedData = sanitizeObject(rawData, ["description"]);
+
+  // 3. Process sanitized data
+  // ... save to database
+
+  // 4. Return response with security headers
+  return NextResponse.json(
+    { success: true },
+    {
+      status: 200,
+      headers: {
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "DENY",
+        "X-XSS-Protection": "1; mode=block",
+      },
+    }
+  );
+}
+```
+
+**Key Principle**: Always validate first, then sanitize, then process
+
+### 3. Step-Based Form Pattern (Ticket 2)
+
+**Pattern**: Break complex forms into manageable steps with centralized state
+
+**Implementation** (`src/lib/components/CareerComponents/SegmentedCareerForm.tsx`):
+
+```typescript
+// 1. Define steps
+const STEPS = [
+  { id: 1, name: "Career Details & Team Access", key: "details" },
+  { id: 2, name: "CV Review & Pre-screening", key: "cv-review" },
+  { id: 3, name: "AI Interview Setup", key: "interview" },
+  { id: 4, name: "Review Career", key: "review" },
+];
+
+// 2. Centralized state management
+const [formData, setFormData] = useState<CareerFormData>(initialData);
+const [currentStep, setCurrentStep] = useState(1);
+
+// 3. Update function passed to all steps
+const updateFormData = (updates: Partial<CareerFormData>) => {
+  setFormData((prev) => ({ ...prev, ...updates }));
+};
+
+// 4. Step validation
+const isStepValid = (step: number): boolean => {
+  switch (step) {
+    case 1:
+      return (
+        formData.jobTitle.trim().length > 0 &&
+        formData.description.trim().length > 0
+      );
+    case 2:
+      return formData.preScreeningQuestions?.length > 0;
+    // ... other steps
+  }
+};
+
+// 5. Render current step
+const renderStep = () => {
+  switch (currentStep) {
+    case 1:
+      return (
+        <CareerDetailsStep
+          formData={formData}
+          updateFormData={updateFormData}
+          validationErrors={validationErrors}
+        />
+      );
+    // ... other steps
+  }
+};
+```
+
+**Benefits**:
+
+- Single source of truth for form state
+- Easy to add/remove steps
+- Reusable step components
+- Centralized validation
+- Better UX with progressive disclosure
+
+### 4. Dynamic Question Management (Ticket 4)
+
+**Pattern**: Flexible question builder with multiple input types
+
+**Implementation** (`src/lib/components/CareerComponents/CareerFormSteps/CVReviewStep.tsx`):
+
+```typescript
+// Question structure
+interface PreScreeningQuestion {
+  id: string;
+  question: string;
+  type: "dropdown" | "text" | "range";
+  options?: string[]; // For dropdown
+  rangeMin?: string; // For range
+  rangeMax?: string; // For range
+}
+
+// Add question
+const addQuestion = (type: string) => {
+  const newQuestion: PreScreeningQuestion = {
+    id: Date.now().toString(),
+    question: "",
+    type: type as "dropdown" | "text" | "range",
+    options: type === "dropdown" ? [""] : undefined,
+  };
+  updateFormData({
+    preScreeningQuestions: [
+      ...(formData.preScreeningQuestions || []),
+      newQuestion,
+    ],
+  });
+};
+
+// Update question
+const updateQuestion = (id: string, updates: Partial<PreScreeningQuestion>) => {
+  const updated = formData.preScreeningQuestions?.map((q) =>
+    q.id === id ? { ...q, ...updates } : q
+  );
+  updateFormData({ preScreeningQuestions: updated });
+};
+
+// Delete question
+const deleteQuestion = (id: string) => {
+  const filtered = formData.preScreeningQuestions?.filter((q) => q.id !== id);
+  updateFormData({ preScreeningQuestions: filtered });
+};
+```
+
+**Benefits**:
+
+- Flexible question types
+- Easy to extend with new types
+- Clean data structure
+- Reusable pattern for other forms
