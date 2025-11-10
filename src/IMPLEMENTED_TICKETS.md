@@ -4,6 +4,9 @@
 
 This document provides comprehensive documentation for all implemented tickets in the Jia Recruiter Portal career management system. All tickets have been successfully implemented and tested.
 
+You can access the app here (Hosted & Deployed on Vercel):
+
+
 ## Table of Contents
 
 ### Tickets
