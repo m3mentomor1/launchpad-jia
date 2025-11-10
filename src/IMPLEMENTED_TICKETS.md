@@ -119,7 +119,6 @@ CORE_API_URL=https://jia-jvx-1a0eba0de6d.herokuapp.com
 - Update career form to be a segmented form
 - User must be able to save current progress and return to last step
 - Pipeline builder is NOT included in this ticket
-```
 
 ### Implementation Details
 
