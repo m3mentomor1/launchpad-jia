@@ -14,11 +14,15 @@ const screeningSettingList = [
 interface AIInterviewStepProps {
   formData: CareerFormData;
   updateFormData: (updates: Partial<CareerFormData>) => void;
+  showValidationErrors?: boolean;
+  validationErrors?: { [key: string]: string };
 }
 
 export default function AIInterviewStep({
   formData,
   updateFormData,
+  showValidationErrors = false,
+  validationErrors = {},
 }: AIInterviewStepProps) {
   const [aiSecretPrompt, setAiSecretPrompt] = useState(
     formData.aiSecretPrompt || ""
@@ -158,70 +162,58 @@ export default function AIInterviewStep({
     <div
       style={{
         display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
+        flexDirection: "column",
         width: "100%",
         gap: 16,
-        alignItems: "flex-start",
       }}
     >
-      {/* Left Column - Main Content */}
+      {/* Divider */}
       <div
         style={{
-          width: "60%",
+          width: "100%",
+          height: "1px",
+          backgroundColor: "#E9EAEB",
+        }}
+      ></div>
+
+      <div
+        style={{
           display: "flex",
-          flexDirection: "column",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          width: "100%",
           gap: 16,
+          alignItems: "flex-start",
         }}
       >
-        {/* AI Interview Settings */}
-        <div className="layered-card-outer">
-          <div className="layered-card-middle">
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 8,
-                marginBottom: 16,
-              }}
-            >
-              <span style={{ fontSize: 16, color: "#181D27", fontWeight: 700 }}>
-                1. AI Interview Settings
-              </span>
-            </div>
-            <div className="layered-card-content">
-              <span
+        {/* Left Column - Main Content */}
+        <div
+          style={{
+            width: "75%",
+            display: "flex",
+            flexDirection: "column",
+            gap: 16,
+          }}
+        >
+          {/* AI Interview Settings */}
+          <div className="layered-card-outer">
+            <div className="layered-card-middle">
+              <div
                 style={{
-                  fontSize: 14,
-                  fontWeight: 600,
-                  color: "#181D27",
-                  display: "block",
-                  marginBottom: 4,
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 8,
+                  padding: "6px 20px",
                 }}
               >
-                AI Interview Screening
-              </span>
-              <span
-                style={{
-                  fontSize: 12,
-                  color: "#6B7280",
-                  display: "block",
-                  marginBottom: 8,
-                }}
-              >
-                Jia automatically endorses candidates who meet the chosen
-                criteria.
-              </span>
-              <CustomDropdown
-                onSelectSetting={(setting: string) =>
-                  updateFormData({ screeningSetting: setting })
-                }
-                screeningSetting={formData.screeningSetting}
-                settingList={screeningSettingList}
-              />
-
-              <div style={{ marginTop: 24 }}>
+                <span
+                  style={{ fontSize: 16, color: "#181D27", fontWeight: 700 }}
+                >
+                  1. AI Interview Settings
+                </span>
+              </div>
+              <div className="layered-card-content">
                 <span
                   style={{
                     fontSize: 14,
@@ -231,70 +223,8 @@ export default function AIInterviewStep({
                     marginBottom: 4,
                   }}
                 >
-                  Require Video on Interview
+                  AI Interview Screening
                 </span>
-                <span
-                  style={{
-                    fontSize: 12,
-                    color: "#6B7280",
-                    display: "block",
-                    marginBottom: 12,
-                  }}
-                >
-                  Require candidates to keep their camera on. Recordings will
-                  appear on their analysis page.
-                </span>
-                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                  <i
-                    className="la la-video"
-                    style={{ color: "#414651", fontSize: 20 }}
-                  ></i>
-                  <span style={{ fontSize: 14, fontWeight: 500 }}>
-                    Require Video Interview
-                  </span>
-                  <label className="switch" style={{ marginLeft: "auto" }}>
-                    <input
-                      type="checkbox"
-                      checked={formData.requireVideo}
-                      onChange={() =>
-                        updateFormData({ requireVideo: !formData.requireVideo })
-                      }
-                    />
-                    <span className="slider round"></span>
-                  </label>
-                  <span style={{ fontSize: 14, color: "#414651" }}>
-                    {formData.requireVideo ? "Yes" : "No"}
-                  </span>
-                </div>
-              </div>
-
-              <div style={{ marginTop: 24 }}>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 8,
-                    marginBottom: 4,
-                  }}
-                >
-                  <i
-                    className="la la-magic"
-                    style={{ color: "#414651", fontSize: 18 }}
-                  ></i>
-                  <span
-                    style={{ fontSize: 14, fontWeight: 600, color: "#181D27" }}
-                  >
-                    AI Interview Secret Prompt
-                  </span>
-                  <span style={{ fontSize: 12, color: "#6B7280" }}>
-                    (optional)
-                  </span>
-                  <i
-                    className="la la-info-circle"
-                    style={{ color: "#9CA3AF", fontSize: 16, cursor: "help" }}
-                    title="Secret Prompts give you extra control over Jia's evaluation style, complementing her accurate assessment of requirements from the job description."
-                  ></i>
-                </div>
                 <span
                   style={{
                     fontSize: 12,
@@ -303,338 +233,455 @@ export default function AIInterviewStep({
                     marginBottom: 8,
                   }}
                 >
-                  Secret Prompts give you extra control over Jia's evaluation
-                  style, complementing her accurate assessment of requirements
-                  from the job description.
+                  Jia automatically endorses candidates who meet the chosen
+                  criteria.
                 </span>
-                <textarea
-                  className="form-control"
-                  placeholder="Enter a secret prompt (e.g., Treat candidates who speak in Taglish, English, or Tagalog equally. Focus on clarity, coherence, and confidence rather than language preference or accent.)"
-                  rows={4}
-                  value={aiSecretPrompt}
-                  onChange={(e) => handleSecretPromptChange(e.target.value)}
-                  style={{ resize: "vertical" }}
-                />
+                <div style={{ maxWidth: "380px" }}>
+                  <CustomDropdown
+                    onSelectSetting={(setting: string) =>
+                      updateFormData({ screeningSetting: setting })
+                    }
+                    screeningSetting={formData.screeningSetting}
+                    settingList={screeningSettingList}
+                  />
+                </div>
+
+                <div style={{ marginTop: 24 }}>
+                  <span
+                    style={{
+                      fontSize: 14,
+                      fontWeight: 600,
+                      color: "#181D27",
+                      display: "block",
+                      marginBottom: 4,
+                    }}
+                  >
+                    Require Video on Interview
+                  </span>
+                  <span
+                    style={{
+                      fontSize: 12,
+                      color: "#6B7280",
+                      display: "block",
+                      marginBottom: 12,
+                    }}
+                  >
+                    Require candidates to keep their camera on. Recordings will
+                    appear on their analysis page.
+                  </span>
+                  <div
+                    style={{ display: "flex", alignItems: "center", gap: 12 }}
+                  >
+                    <i
+                      className="la la-video"
+                      style={{ color: "#414651", fontSize: 20 }}
+                    ></i>
+                    <span style={{ fontSize: 14, fontWeight: 500 }}>
+                      Require Video Interview
+                    </span>
+                    <label className="switch" style={{ marginLeft: "auto" }}>
+                      <input
+                        type="checkbox"
+                        checked={formData.requireVideo}
+                        onChange={() =>
+                          updateFormData({
+                            requireVideo: !formData.requireVideo,
+                          })
+                        }
+                      />
+                      <span className="slider round"></span>
+                    </label>
+                    <span style={{ fontSize: 14, color: "#414651" }}>
+                      {formData.requireVideo ? "Yes" : "No"}
+                    </span>
+                  </div>
+                </div>
+
+                <div style={{ marginTop: 24 }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      marginBottom: 4,
+                    }}
+                  >
+                    <i
+                      className="la la-magic"
+                      style={{ color: "#414651", fontSize: 18 }}
+                    ></i>
+                    <span
+                      style={{
+                        fontSize: 14,
+                        fontWeight: 600,
+                        color: "#181D27",
+                      }}
+                    >
+                      AI Interview Secret Prompt
+                    </span>
+                    <span style={{ fontSize: 12, color: "#6B7280" }}>
+                      (optional)
+                    </span>
+                    <i
+                      className="la la-info-circle"
+                      style={{ color: "#9CA3AF", fontSize: 16, cursor: "help" }}
+                      title="Secret Prompts give you extra control over Jia's evaluation style, complementing her accurate assessment of requirements from the job description."
+                    ></i>
+                  </div>
+                  <span
+                    style={{
+                      fontSize: 12,
+                      color: "#6B7280",
+                      display: "block",
+                      marginBottom: 8,
+                    }}
+                  >
+                    Secret Prompts give you extra control over Jia's evaluation
+                    style, complementing her accurate assessment of requirements
+                    from the job description.
+                  </span>
+                  <textarea
+                    className="form-control"
+                    placeholder="Enter a secret prompt (e.g., Treat candidates who speak in Taglish, English, or Tagalog equally. Focus on clarity, coherence, and confidence rather than language preference or accent.)"
+                    rows={3}
+                    value={aiSecretPrompt}
+                    onChange={(e) => handleSecretPromptChange(e.target.value)}
+                    style={{
+                      resize: "none",
+                      maxHeight: "150px",
+                      overflowY: "auto",
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* AI Interview Questions */}
+          <div className="layered-card-outer">
+            <div className="layered-card-middle">
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "6px 20px",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span
+                    style={{ fontSize: 16, color: "#181D27", fontWeight: 700 }}
+                  >
+                    2. AI Interview Questions
+                  </span>
+                  <span
+                    style={{
+                      fontSize: 14,
+                      fontWeight: 600,
+                      color: "#181D27",
+                      backgroundColor: "#F3F4F6",
+                      padding: "2px 8px",
+                      borderRadius: "12px",
+                    }}
+                  >
+                    {totalQuestions}
+                  </span>
+                </div>
+                <button
+                  onClick={handleGenerateAllQuestions}
+                  style={{
+                    background: "#181D27",
+                    color: "#fff",
+                    border: "none",
+                    padding: "6px 12px",
+                    borderRadius: "20px",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                    fontSize: 13,
+                  }}
+                >
+                  <i className="la la-magic" style={{ fontSize: 16 }}></i>
+                  Generate all questions
+                </button>
+              </div>
+
+              {showValidationErrors && validationErrors.interviewQuestions && (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    marginBottom: 16,
+                  }}
+                >
+                  <i
+                    className="la la-exclamation-triangle"
+                    style={{ color: "#EF4444", fontSize: 18 }}
+                  ></i>
+                  <span style={{ fontSize: 14, color: "#DC2626" }}>
+                    {validationErrors.interviewQuestions}
+                  </span>
+                </div>
+              )}
+
+              <div className="layered-card-content">
+                <div
+                  style={{ display: "flex", flexDirection: "column", gap: 16 }}
+                >
+                  {formData.questions.map((category) => (
+                    <div key={category.id}>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          marginBottom: 12,
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontSize: 14,
+                            fontWeight: 600,
+                            color: "#181D27",
+                          }}
+                        >
+                          {category.category}
+                        </span>
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          marginBottom: 12,
+                        }}
+                      >
+                        <div style={{ display: "flex", gap: 8 }}>
+                          <button
+                            onClick={() => handleGenerateQuestions(category.id)}
+                            style={{
+                              background: "#181D27",
+                              color: "#fff",
+                              border: "none",
+                              padding: "6px 12px",
+                              borderRadius: "20px",
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 6,
+                              fontSize: 13,
+                            }}
+                          >
+                            <i
+                              className="la la-magic"
+                              style={{ fontSize: 16 }}
+                            ></i>
+                            Generate questions
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleManuallyAdd(category.id, category.category)
+                            }
+                            style={{
+                              background: "transparent",
+                              color: "#414651",
+                              border: "1px solid #D5D7DA",
+                              padding: "6px 12px",
+                              borderRadius: "8px",
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 6,
+                              fontSize: 13,
+                            }}
+                          >
+                            <i
+                              className="la la-plus-circle"
+                              style={{ fontSize: 16 }}
+                            ></i>
+                            Manually add
+                          </button>
+                        </div>
+                        {category.questions.length > 0 && (
+                          <span style={{ fontSize: 12, color: "#6B7280" }}>
+                            # of questions to ask{" "}
+                            <span style={{ fontWeight: 600, color: "#181D27" }}>
+                              {category.questions.length}
+                            </span>
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Display questions for this category */}
+                      {category.questions.length > 0 && (
+                        <div style={{ marginTop: 12 }}>
+                          {category.questions.map(
+                            (question: any, idx: number) => (
+                              <div
+                                key={question.id || idx}
+                                draggable
+                                onDragStart={() =>
+                                  handleDragStart(category.id, idx)
+                                }
+                                onDragOver={handleDragOver}
+                                onDrop={(e) => handleDrop(category.id, idx, e)}
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 12,
+                                  marginBottom: 8,
+                                  padding: "12px",
+                                  backgroundColor: "#FFFFFF",
+                                  border: "1px solid #E9EAEB",
+                                  borderRadius: "8px",
+                                  cursor: "move",
+                                }}
+                              >
+                                <i
+                                  className="la la-grip-vertical"
+                                  style={{
+                                    color: "#9CA3AF",
+                                    cursor: "grab",
+                                    fontSize: 16,
+                                  }}
+                                ></i>
+                                {editingQuestion?.questionId === question.id ? (
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    value={editingQuestion.text}
+                                    onChange={(e) =>
+                                      setEditingQuestion({
+                                        ...editingQuestion,
+                                        text: e.target.value,
+                                      })
+                                    }
+                                    onBlur={handleSaveEdit}
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Enter") handleSaveEdit();
+                                      if (e.key === "Escape")
+                                        setEditingQuestion(null);
+                                    }}
+                                    autoFocus
+                                    style={{ flex: 1 }}
+                                  />
+                                ) : (
+                                  <span
+                                    style={{
+                                      fontSize: 14,
+                                      color: "#414651",
+                                      flex: 1,
+                                    }}
+                                  >
+                                    {question.question}
+                                  </span>
+                                )}
+                                <button
+                                  onClick={() =>
+                                    handleEditQuestion(
+                                      category.id,
+                                      question.id,
+                                      question.question
+                                    )
+                                  }
+                                  style={{
+                                    background: "transparent",
+                                    border: "1px solid #D5D7DA",
+                                    padding: "4px 8px",
+                                    borderRadius: "6px",
+                                    cursor: "pointer",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 4,
+                                    fontSize: 13,
+                                    color: "#414651",
+                                  }}
+                                >
+                                  <i
+                                    className="la la-pen"
+                                    style={{ fontSize: 14 }}
+                                  ></i>
+                                  Edit
+                                </button>
+                                <button
+                                  onClick={() =>
+                                    handleDeleteQuestion(
+                                      category.id,
+                                      question.id
+                                    )
+                                  }
+                                  style={{
+                                    background: "transparent",
+                                    border: "none",
+                                    cursor: "pointer",
+                                    padding: "4px",
+                                  }}
+                                >
+                                  <i
+                                    className="la la-trash"
+                                    style={{ color: "#EF4444", fontSize: 18 }}
+                                  ></i>
+                                </button>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* AI Interview Questions */}
-        <div className="layered-card-outer">
-          <div className="layered-card-middle">
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginBottom: 16,
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        {/* Right Column - Tips */}
+        <div style={{ width: "25%", position: "sticky", top: 100 }}>
+          <div className="layered-card-outer">
+            <div className="layered-card-middle">
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 8,
+                  padding: "6px 20px",
+                }}
+              >
+                <i
+                  className="la la-lightbulb"
+                  style={{ color: "#F59E0B", fontSize: 24 }}
+                ></i>
                 <span
                   style={{ fontSize: 16, color: "#181D27", fontWeight: 700 }}
                 >
-                  2. AI Interview Questions
-                </span>
-                <span
-                  style={{
-                    fontSize: 14,
-                    fontWeight: 600,
-                    color: "#181D27",
-                    backgroundColor: "#F3F4F6",
-                    padding: "2px 8px",
-                    borderRadius: "12px",
-                  }}
-                >
-                  {totalQuestions}
+                  Tips
                 </span>
               </div>
-              <button
-                onClick={handleGenerateAllQuestions}
-                style={{
-                  background: "#181D27",
-                  color: "#fff",
-                  border: "none",
-                  padding: "6px 12px",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                  fontSize: 13,
-                }}
-              >
-                <i className="la la-magic" style={{ fontSize: 16 }}></i>
-                Generate all questions
-              </button>
-            </div>
-
-            <div className="layered-card-content">
-              <div
-                style={{ display: "flex", flexDirection: "column", gap: 16 }}
-              >
-                {formData.questions.map((category) => (
-                  <div key={category.id}>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        marginBottom: 12,
-                      }}
-                    >
-                      <span
-                        style={{
-                          fontSize: 14,
-                          fontWeight: 600,
-                          color: "#181D27",
-                        }}
-                      >
-                        {category.category}
-                      </span>
-                    </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        marginBottom: 12,
-                      }}
-                    >
-                      <div style={{ display: "flex", gap: 8 }}>
-                        <button
-                          onClick={() => handleGenerateQuestions(category.id)}
-                          style={{
-                            background: "#181D27",
-                            color: "#fff",
-                            border: "none",
-                            padding: "6px 12px",
-                            borderRadius: "8px",
-                            cursor: "pointer",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 6,
-                            fontSize: 13,
-                          }}
-                        >
-                          <i
-                            className="la la-magic"
-                            style={{ fontSize: 16 }}
-                          ></i>
-                          Generate questions
-                        </button>
-                        <button
-                          onClick={() =>
-                            handleManuallyAdd(category.id, category.category)
-                          }
-                          style={{
-                            background: "transparent",
-                            color: "#414651",
-                            border: "1px solid #D5D7DA",
-                            padding: "6px 12px",
-                            borderRadius: "8px",
-                            cursor: "pointer",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 6,
-                            fontSize: 13,
-                          }}
-                        >
-                          <i
-                            className="la la-plus-circle"
-                            style={{ fontSize: 16 }}
-                          ></i>
-                          Manually add
-                        </button>
-                      </div>
-                      {category.questions.length > 0 && (
-                        <span style={{ fontSize: 12, color: "#6B7280" }}>
-                          # of questions to ask{" "}
-                          <span style={{ fontWeight: 600, color: "#181D27" }}>
-                            {category.questions.length}
-                          </span>
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Display questions for this category */}
-                    {category.questions.length > 0 && (
-                      <div style={{ marginTop: 12 }}>
-                        {category.questions.map(
-                          (question: any, idx: number) => (
-                            <div
-                              key={question.id || idx}
-                              draggable
-                              onDragStart={() =>
-                                handleDragStart(category.id, idx)
-                              }
-                              onDragOver={handleDragOver}
-                              onDrop={(e) => handleDrop(category.id, idx, e)}
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 12,
-                                marginBottom: 8,
-                                padding: "12px",
-                                backgroundColor: "#FFFFFF",
-                                border: "1px solid #E9EAEB",
-                                borderRadius: "8px",
-                                cursor: "move",
-                              }}
-                            >
-                              <i
-                                className="la la-grip-vertical"
-                                style={{
-                                  color: "#9CA3AF",
-                                  cursor: "grab",
-                                  fontSize: 16,
-                                }}
-                              ></i>
-                              {editingQuestion?.questionId === question.id ? (
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  value={editingQuestion.text}
-                                  onChange={(e) =>
-                                    setEditingQuestion({
-                                      ...editingQuestion,
-                                      text: e.target.value,
-                                    })
-                                  }
-                                  onBlur={handleSaveEdit}
-                                  onKeyDown={(e) => {
-                                    if (e.key === "Enter") handleSaveEdit();
-                                    if (e.key === "Escape")
-                                      setEditingQuestion(null);
-                                  }}
-                                  autoFocus
-                                  style={{ flex: 1 }}
-                                />
-                              ) : (
-                                <span
-                                  style={{
-                                    fontSize: 14,
-                                    color: "#414651",
-                                    flex: 1,
-                                  }}
-                                >
-                                  {question.question}
-                                </span>
-                              )}
-                              <button
-                                onClick={() =>
-                                  handleEditQuestion(
-                                    category.id,
-                                    question.id,
-                                    question.question
-                                  )
-                                }
-                                style={{
-                                  background: "transparent",
-                                  border: "1px solid #D5D7DA",
-                                  padding: "4px 8px",
-                                  borderRadius: "6px",
-                                  cursor: "pointer",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: 4,
-                                  fontSize: 13,
-                                  color: "#414651",
-                                }}
-                              >
-                                <i
-                                  className="la la-pen"
-                                  style={{ fontSize: 14 }}
-                                ></i>
-                                Edit
-                              </button>
-                              <button
-                                onClick={() =>
-                                  handleDeleteQuestion(category.id, question.id)
-                                }
-                                style={{
-                                  background: "transparent",
-                                  border: "none",
-                                  cursor: "pointer",
-                                  padding: "4px",
-                                }}
-                              >
-                                <i
-                                  className="la la-trash"
-                                  style={{ color: "#EF4444", fontSize: 18 }}
-                                ></i>
-                              </button>
-                            </div>
-                          )
-                        )}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Right Column - Tips */}
-      <div style={{ width: "40%", position: "sticky", top: 100 }}>
-        <div className="layered-card-outer">
-          <div className="layered-card-middle">
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 8,
-              }}
-            >
-              <i
-                className="la la-lightbulb"
-                style={{ color: "#F59E0B", fontSize: 24 }}
-              ></i>
-              <span style={{ fontSize: 16, color: "#181D27", fontWeight: 700 }}>
-                Tips
-              </span>
-            </div>
-            <div className="layered-card-content">
-              <div style={{ marginBottom: 16 }}>
-                <span
-                  style={{ fontSize: 14, fontWeight: 600, color: "#181D27" }}
-                >
-                  Add a Secret Prompt
-                </span>
-                <span
-                  style={{
-                    fontSize: 12,
-                    color: "#6B7280",
-                    display: "block",
-                    marginTop: 4,
-                  }}
-                >
-                  to fine-tune how Jia scores and evaluates the interview
-                  responses.
-                </span>
-              </div>
-              <div>
-                <span
-                  style={{ fontSize: 14, fontWeight: 600, color: "#181D27" }}
-                >
-                  Use "Generate Questions"
-                </span>
-                <span
-                  style={{
-                    fontSize: 12,
-                    color: "#6B7280",
-                    display: "block",
-                    marginTop: 4,
-                  }}
-                >
-                  to quickly create tailored interview questions, then refine or
-                  mix them with your own for balanced results.
-                </span>
+              <div className="layered-card-content">
+                <div style={{ marginBottom: 16 }}>
+                  <span style={{ fontSize: 14, color: "#181D27" }}>
+                    <span style={{ fontWeight: 600 }}>Add a Secret Prompt</span>{" "}
+                    <span style={{ color: "#6B7280" }}>
+                      to fine-tune how Jia scores and evaluates the interview
+                      responses.
+                    </span>
+                  </span>
+                </div>
+                <div>
+                  <span style={{ fontSize: 14, color: "#181D27" }}>
+                    <span style={{ fontWeight: 600 }}>
+                      Use "Generate Questions"
+                    </span>{" "}
+                    <span style={{ color: "#6B7280" }}>
+                      to quickly create tailored interview questions, then
+                      refine or mix them with your own for balanced results.
+                    </span>
+                  </span>
+                </div>
               </div>
             </div>
           </div>

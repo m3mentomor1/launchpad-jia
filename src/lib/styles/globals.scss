@@ -589,6 +589,30 @@ tr {
   font-weight: 700 !important;
 }
 
+// Dropdown menu base styling
+.dropdown-menu {
+  border-radius: 8px !important;
+
+  // Custom scrollbar styling for webkit browsers
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 8px;
+
+    &:hover {
+      background: #9ca3af;
+    }
+  }
+}
+
 // Dropdown item hover and active state
 .dropdown-menu .dropdown-item {
   transition: background 0.2s, color 0.2s;
@@ -806,7 +830,7 @@ th[scope="col"] {
   gap: 10px;
   background: #fff;
   border: 1px solid #ddd;
-  padding: 10px 20px;
+  padding: 10px 12px;
   border-radius: 8px;
   transition: 0.3s;
   cursor: pointer;
@@ -814,6 +838,11 @@ th[scope="col"] {
   &:hover {
     background: #f8f9fa;
     border-color: #ddd;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: none;
   }
 }
 
@@ -2078,15 +2107,9 @@ $gifURL: "/gr-1.gif";
 .layered-card-outer {
   margin-top: 16px;
   width: 100%;
-  background: linear-gradient(
-    90deg,
-    #9fcaed 0%,
-    #ceb6da 33%,
-    #ebacc9 66%,
-    #fccec0 100%
-  );
+  background: #ffffff;
   border-radius: 20px;
-  padding-top: 10px;
+  padding: 0;
 }
 
 .layered-card-content {
@@ -2379,6 +2402,7 @@ input:checked + .slider:before {
     #ebacc9 66%,
     #fccec0 100%
   );
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -2490,4 +2514,66 @@ html {
 
 .bg-green-100 {
   background-color: #e6f9f0 !important;
+}
+
+// Error border styles for form validation
+.form-control.error-border,
+.dropdown-btn.error-border {
+  border: 1px solid #ef4444 !important;
+  border-color: #ef4444 !important;
+}
+
+.form-control:focus.error-border,
+.dropdown-btn:focus.error-border {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 0.2rem rgba(239, 68, 68, 0.25) !important;
+  outline: none !important;
+}
+
+// Custom Tooltip Styles
+.tooltip-container:hover .custom-tooltip {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+// Option drag handle hover effect
+.option-drag-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .option-grip-icon {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    transition: opacity 0.2s ease, width 0.2s ease;
+  }
+
+  .option-input-wrapper {
+    flex: 1;
+    transition: margin-left 0.2s ease;
+  }
+
+  &:hover .option-grip-icon {
+    opacity: 1;
+    width: 28px;
+  }
+}
+
+// Option delete button hover effect
+.option-delete-btn {
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #f3f4f6 !important;
+  }
+}
+
+// Delete question button hover effect
+.delete-question-btn {
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #fee2e2 !important;
+  }
 }

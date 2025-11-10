@@ -25,6 +25,7 @@ export interface CareerFormData {
   salaryNegotiable: boolean;
   minimumSalary: string;
   maximumSalary: string;
+  currency: string;
   screeningSetting: string;
   requireVideo: boolean;
   questions: any[];
@@ -56,6 +57,10 @@ export default function SegmentedCareerForm({
   const [currentStep, setCurrentStep] = useState(1);
   const [isSaving, setIsSaving] = useState(false);
   const [hasSavedDraft, setHasSavedDraft] = useState(false);
+  const [showValidationErrors, setShowValidationErrors] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<{
+    [key: string]: string;
+  }>({});
 
   const [formData, setFormData] = useState<CareerFormData>({
     jobTitle: career?.jobTitle || "",
@@ -69,6 +74,7 @@ export default function SegmentedCareerForm({
     salaryNegotiable: career?.salaryNegotiable ?? true,
     minimumSalary: career?.minimumSalary || "",
     maximumSalary: career?.maximumSalary || "",
+    currency: career?.currency || "PHP",
     screeningSetting: career?.screeningSetting || "Good Fit and above",
     requireVideo: career?.requireVideo ?? true,
     questions: career?.questions || [
@@ -138,6 +144,7 @@ export default function SegmentedCareerForm({
         salaryNegotiable: true,
         minimumSalary: "",
         maximumSalary: "",
+        currency: "PHP",
         screeningSetting: "Good Fit and above",
         requireVideo: true,
         questions: [
@@ -244,9 +251,81 @@ export default function SegmentedCareerForm({
 
   const handleNext = () => {
     if (isStepValid(currentStep)) {
+      setShowValidationErrors(false);
+      setValidationErrors({});
       saveDraft();
       setCurrentStep((prev) => Math.min(prev + 1, STEPS.length));
+    } else {
+      setShowValidationErrors(true);
+      collectValidationErrors(currentStep);
     }
+  };
+
+  const collectValidationErrors = (step: number) => {
+    const errors: { [key: string]: string } = {};
+
+    switch (step) {
+      case 1:
+        // Career Details & Team Access validation
+        if (!formData.jobTitle.trim())
+          errors.jobTitle = "This is a required field.";
+        if (!formData.employmentType.trim())
+          errors.employmentType = "This is a required field.";
+        if (!formData.workSetup.trim())
+          errors.workSetup = "This is a required field.";
+        if (!formData.province.trim())
+          errors.province = "This is a required field.";
+        if (!formData.city.trim()) errors.city = "This is a required field.";
+        if (!formData.minimumSalary.trim())
+          errors.minimumSalary = "This is a required field.";
+        if (!formData.maximumSalary.trim())
+          errors.maximumSalary = "This is a required field.";
+        if (!formData.description.trim())
+          errors.description = "This is a required field.";
+        break;
+
+      case 2:
+        // CV Review & Pre-screening validation
+        if (
+          !formData.preScreeningQuestions ||
+          formData.preScreeningQuestions.length === 0
+        ) {
+          errors.preScreeningQuestions =
+            "Please add at least 1 pre-screening question";
+        } else {
+          formData.preScreeningQuestions.forEach((q: any, index: number) => {
+            if (!q.question || q.question.trim().length === 0) {
+              errors[`preScreeningQuestion_${index}_question`] =
+                "This is a required field.";
+            }
+            if (q.type === "dropdown") {
+              if (
+                !q.options ||
+                q.options.length === 0 ||
+                !q.options.some((opt: string) => opt.trim().length > 0)
+              ) {
+                errors[`preScreeningQuestion_${index}_options`] =
+                  "Add at least one option";
+              }
+            }
+          });
+        }
+        break;
+
+      case 3:
+        // AI Interview Setup validation
+        const totalQuestions = formData.questions.reduce(
+          (sum, q) => sum + q.questions.length,
+          0
+        );
+        if (totalQuestions < 5) {
+          errors.interviewQuestions =
+            "Please add at least 5 interview questions.";
+        }
+        break;
+    }
+
+    setValidationErrors(errors);
   };
 
   const handleSaveAsUnpublished = async () => {
@@ -387,17 +466,26 @@ export default function SegmentedCareerForm({
           <CareerDetailsStep
             formData={formData}
             updateFormData={updateFormData}
+            showValidationErrors={showValidationErrors}
+            validationErrors={validationErrors}
           />
         );
       case 2:
         return (
-          <CVReviewStep formData={formData} updateFormData={updateFormData} />
+          <CVReviewStep
+            formData={formData}
+            updateFormData={updateFormData}
+            showValidationErrors={showValidationErrors}
+            validationErrors={validationErrors}
+          />
         );
       case 3:
         return (
           <AIInterviewStep
             formData={formData}
             updateFormData={updateFormData}
+            showValidationErrors={showValidationErrors}
+            validationErrors={validationErrors}
           />
         );
       case 4:
@@ -430,17 +518,22 @@ export default function SegmentedCareerForm({
       >
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           <h1 style={{ fontSize: "24px", fontWeight: 550, color: "#111827" }}>
-            {formType === "add" ? "Add new career" : "Edit Career Details"}
+            {formType === "add" ? (
+              (currentStep > 1 && formData.jobTitle.trim()) ||
+              (hasSavedDraft &&
+                currentStep === 1 &&
+                formData.jobTitle.trim()) ? (
+                <>
+                  <span style={{ color: "#6B7280" }}>[Draft]</span>{" "}
+                  {formData.jobTitle}
+                </>
+              ) : (
+                "Add new career"
+              )
+            ) : (
+              "Edit Career Details"
+            )}
           </h1>
-          {hasSavedDraft && (
-            <span style={{ fontSize: "14px", color: "#6B7280" }}>
-              <i
-                className="la la-info-circle"
-                style={{ marginRight: "4px" }}
-              ></i>
-              Draft restored from previous session
-            </span>
-          )}
         </div>
         <div
           style={{
@@ -450,23 +543,6 @@ export default function SegmentedCareerForm({
             gap: "10px",
           }}
         >
-          {formType === "add" && hasSavedDraft && (
-            <button
-              style={{
-                width: "fit-content",
-                color: "#DC2626",
-                background: "#fff",
-                border: "1px solid #FCA5A5",
-                padding: "8px 16px",
-                borderRadius: "60px",
-                cursor: "pointer",
-                whiteSpace: "nowrap",
-              }}
-              onClick={clearDraft}
-            >
-              Clear Draft
-            </button>
-          )}
           {formType === "edit" && (
             <button
               style={{
@@ -505,19 +581,15 @@ export default function SegmentedCareerForm({
           </button>
           {currentStep < STEPS.length ? (
             <button
-              disabled={!isStepValid(currentStep) || isSaving}
+              disabled={isSaving}
               style={{
                 width: "fit-content",
-                background:
-                  !isStepValid(currentStep) || isSaving ? "#D5D7DA" : "black",
+                background: isSaving ? "#D5D7DA" : "black",
                 color: "#fff",
                 border: "1px solid #E9EAEB",
                 padding: "8px 16px",
                 borderRadius: "60px",
-                cursor:
-                  !isStepValid(currentStep) || isSaving
-                    ? "not-allowed"
-                    : "pointer",
+                cursor: isSaving ? "not-allowed" : "pointer",
                 whiteSpace: "nowrap",
               }}
               onClick={handleNext}
@@ -530,19 +602,15 @@ export default function SegmentedCareerForm({
             </button>
           ) : (
             <button
-              disabled={!isStepValid(currentStep) || isSaving}
+              disabled={isSaving}
               style={{
                 width: "fit-content",
-                background:
-                  !isStepValid(currentStep) || isSaving ? "#D5D7DA" : "black",
+                background: isSaving ? "#D5D7DA" : "black",
                 color: "#fff",
                 border: "1px solid #E9EAEB",
                 padding: "8px 16px",
                 borderRadius: "60px",
-                cursor:
-                  !isStepValid(currentStep) || isSaving
-                    ? "not-allowed"
-                    : "pointer",
+                cursor: isSaving ? "not-allowed" : "pointer",
                 whiteSpace: "nowrap",
               }}
               onClick={handleSaveAndPublish}
@@ -551,7 +619,7 @@ export default function SegmentedCareerForm({
                 className="la la-check-circle"
                 style={{ color: "#fff", fontSize: 20, marginRight: 8 }}
               ></i>
-              Save as Published
+              {currentStep === STEPS.length ? "Publish" : "Save as Published"}
             </button>
           )}
         </div>
@@ -561,12 +629,16 @@ export default function SegmentedCareerForm({
       <StepIndicator
         steps={STEPS}
         currentStep={currentStep}
+        showValidationErrors={showValidationErrors}
+        hasValidationErrors={Object.keys(validationErrors).length > 0}
         onStepClick={(step) => {
           // Only allow clicking on completed steps or the current step
           // Don't allow skipping ahead if current step is invalid
           if (step <= currentStep || isStepValid(currentStep)) {
             saveDraft();
             setCurrentStep(step);
+            setShowValidationErrors(false);
+            setValidationErrors({});
           }
         }}
       />
