@@ -70,6 +70,15 @@ export async function signInWithGoogle(type) {
         console.log(res.data);
       }
 
+      // Update localStorage with complete user data including orgID
+      localStorage.user = JSON.stringify({
+        email: res.data.email,
+        image: res.data.image,
+        name: res.data.name,
+        role: res.data.role,
+        orgID: res.data.orgID,
+      });
+
       toast.dismiss("loading-toast");
 
       successToast("Login successful");
@@ -103,9 +112,7 @@ export async function signInWithGoogle(type) {
           if (result.isConfirmed) {
             Swal.close();
           } else if (result.dismiss === Swal.DismissReason.cancel) {
-            window.location.href = host.includes("localhost")
-              ? "/job-portal"
-              : "https://www.hellojia.ai";
+            window.location.href = "/job-portal";
           }
         });
 
@@ -171,9 +178,7 @@ export async function signInWithGoogle(type) {
 
       if (orgData.data.length == 0) {
         localStorage.role = "applicant";
-        window.location.href = window.location.origin.includes("localhost")
-          ? "/job-portal"
-          : "https://www.hellojia.ai";
+        window.location.href = "/job-portal";
         return;
       }
 

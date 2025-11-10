@@ -35,6 +35,9 @@ export default function CareerDetailsStep({
   const [currentUserRole, setCurrentUserRole] = useState("Job Owner");
   const [showCurrentUser, setShowCurrentUser] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [organizationMembers, setOrganizationMembers] = useState([]);
+  const [loadingMembers, setLoadingMembers] = useState(true);
+  const [addedMembers, setAddedMembers] = useState<any[]>([]);
 
   useEffect(() => {
     setProvinceList(philippineCitiesAndProvinces.provinces);
@@ -57,6 +60,65 @@ export default function CareerDetailsStep({
 
     if (!formData.city && cities.length > 0) {
       updateFormData({ city: cities[0].name });
+    }
+
+    // Fetch organization members
+    // Read directly from localStorage as fallback if context is not ready
+    const storedUser = localStorage.getItem("user");
+    const currentUser = user || (storedUser ? JSON.parse(storedUser) : null);
+
+    const fetchMembers = (orgID: string) => {
+      fetch("/api/fetch-members", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orgID }),
+      })
+        .then((res) => res.json())
+        .then((members) => {
+          setOrganizationMembers(members);
+          setLoadingMembers(false);
+        })
+        .catch((error) => {
+          console.error("Error fetching members:", error);
+          setLoadingMembers(false);
+        });
+    };
+
+    if (currentUser?.orgID) {
+      fetchMembers(currentUser.orgID);
+    } else if (currentUser?.email) {
+      // Fallback: fetch user data from auth API to get orgID
+      fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: currentUser.name,
+          email: currentUser.email,
+          image: currentUser.image,
+        }),
+      })
+        .then((res) => res.json())
+        .then((userData) => {
+          if (userData.orgID) {
+            // Update localStorage with orgID
+            localStorage.setItem(
+              "user",
+              JSON.stringify({
+                ...currentUser,
+                orgID: userData.orgID,
+              })
+            );
+            fetchMembers(userData.orgID);
+          } else {
+            setLoadingMembers(false);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching user data:", error);
+          setLoadingMembers(false);
+        });
+    } else {
+      setLoadingMembers(false);
     }
   }, []);
 
@@ -602,18 +664,37 @@ export default function CareerDetailsStep({
                   </div>
                   <div style={{ minWidth: 200 }}>
                     <CustomDropdown
-                      onSelectSetting={(member: string) => {
-                        if (
-                          member === user?.name ||
-                          member === "Current User"
-                        ) {
-                          setShowCurrentUser(true);
-                          setCurrentUserRole("Job Owner");
+                      onSelectSetting={(memberName: string) => {
+                        // Find the full member object
+                        const selectedMember = organizationMembers.find(
+                          (m: any) => (m.name || m.email) === memberName
+                        );
+
+                        if (selectedMember) {
+                          // Check if member is already added
+                          const alreadyAdded = addedMembers.some(
+                            (m) => m.email === selectedMember.email
+                          );
+
+                          if (!alreadyAdded) {
+                            setAddedMembers([
+                              ...addedMembers,
+                              { ...selectedMember, role: "Contributor" },
+                            ]);
+                          }
                         }
                       }}
-                      screeningSetting="Add member"
-                      settingList={[{ name: user?.name || "Current User" }]}
-                      placeholder="Add member"
+                      screeningSetting=""
+                      settingList={
+                        loadingMembers
+                          ? [{ name: "Loading..." }]
+                          : organizationMembers.length > 0
+                          ? organizationMembers.map((member: any) => ({
+                              name: member.name || member.email,
+                            }))
+                          : [{ name: "No members found" }]
+                      }
+                      placeholder="Add Member"
                     />
                   </div>
                 </div>
@@ -715,6 +796,111 @@ export default function CareerDetailsStep({
                     </div>
                   </div>
                 )}
+
+                {/* Added Members */}
+                {addedMembers.map((member, index) => (
+                  <div
+                    key={member.email}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      padding: "12px",
+                      backgroundColor: "#F9FAFB",
+                      borderRadius: "8px",
+                      marginBottom: 8,
+                      border: "1px solid #E9EAEB",
+                    }}
+                  >
+                    <div
+                      style={{ display: "flex", alignItems: "center", gap: 12 }}
+                    >
+                      <div
+                        style={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: "50%",
+                          backgroundColor: "#E9EAEB",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          overflow: "hidden",
+                        }}
+                      >
+                        {member.image ? (
+                          <img
+                            src={member.image}
+                            alt={member.name}
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                            }}
+                          />
+                        ) : (
+                          <i
+                            className="la la-user"
+                            style={{ fontSize: 20, color: "#6B7280" }}
+                          ></i>
+                        )}
+                      </div>
+                      <div>
+                        <div
+                          style={{
+                            fontSize: 14,
+                            fontWeight: 500,
+                            color: "#181D27",
+                          }}
+                        >
+                          {member.name || member.email}
+                        </div>
+                        <div style={{ fontSize: 12, color: "#6B7280" }}>
+                          {member.email}
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      style={{ display: "flex", alignItems: "center", gap: 8 }}
+                    >
+                      <div style={{ minWidth: 150 }}>
+                        <CustomDropdown
+                          onSelectSetting={(role: string) => {
+                            const updatedMembers = [...addedMembers];
+                            updatedMembers[index].role = role;
+                            setAddedMembers(updatedMembers);
+                          }}
+                          screeningSetting={member.role}
+                          settingList={[
+                            { name: "Job Owner" },
+                            { name: "Contributor" },
+                          ]}
+                        />
+                      </div>
+                      <button
+                        style={{
+                          background: "transparent",
+                          border: "none",
+                          cursor: "pointer",
+                          padding: "8px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          borderRadius: "6px",
+                        }}
+                        onClick={() => {
+                          setAddedMembers(
+                            addedMembers.filter((_, i) => i !== index)
+                          );
+                        }}
+                      >
+                        <i
+                          className="la la-trash"
+                          style={{ fontSize: 20, color: "#EF4444" }}
+                        ></i>
+                      </button>
+                    </div>
+                  </div>
+                ))}
 
                 <span
                   style={{

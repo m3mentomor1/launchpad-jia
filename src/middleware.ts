@@ -8,21 +8,9 @@ export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const url = request.nextUrl.clone();
 
-  if (pathname === "/" && host.includes("hellojia.ai")) {
-    url.pathname = "/job-portal";
-    return NextResponse.rewrite(url);
-  }
+  // Removed hellojia.ai specific redirect
 
-  if (
-    host.includes("hirejia.ai") &&
-    (pathname.startsWith("/dashboard") ||
-      pathname.startsWith("/job-openings") ||
-      pathname.startsWith("/login"))
-  ) {
-    const newUrl = new URL(request.url);
-    newUrl.hostname = "hellojia.ai";
-    return NextResponse.redirect(newUrl);
-  }
+  // Removed redirect to hellojia.ai - keep users on current domain
 
   if (host.startsWith("admin.hirejia.ai") && pathname === "/") {
     const url = request.nextUrl.clone();
@@ -41,16 +29,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(newUrl);
   }
 
-  // Redirect to hellojia.ai for applicant portal
-  if (
-    !host.includes("hellojia") &&
-    !host.includes("localhost") &&
-    (pathname.includes("applicant") || pathname.includes("job-openings"))
-  ) {
-    const newUrl = new URL(request.url);
-    newUrl.hostname = `hellojia.ai`;
-    return NextResponse.redirect(newUrl);
-  }
+  // Removed redirect to hellojia.ai - keep users on current domain
 
   return NextResponse.next();
 }
