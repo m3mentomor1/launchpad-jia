@@ -49,6 +49,18 @@ This document provides comprehensive documentation for all implemented tickets i
 - Ensure a working build
 - Use CORE API URL: https://jia-jvx-1a0eba0de6d.herokuapp.com
 
+### Git Branch
+
+All feature implementations are developed in the `feature` branch.
+
+```bash
+# Switch to feature branch
+git checkout feature
+
+# View all changes
+git log --oneline
+```
+
 ### Implementation Details
 
 #### Environment Configuration
