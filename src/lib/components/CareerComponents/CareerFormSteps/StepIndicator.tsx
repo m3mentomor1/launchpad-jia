@@ -10,97 +10,153 @@ interface StepIndicatorProps {
   steps: Step[];
   currentStep: number;
   onStepClick: (step: number) => void;
+  showValidationErrors?: boolean;
+  hasValidationErrors?: boolean;
 }
 
 export default function StepIndicator({
   steps,
   currentStep,
   onStepClick,
+  showValidationErrors = false,
+  hasValidationErrors = false,
 }: StepIndicatorProps) {
   return (
     <div
       style={{
         display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
+        alignItems: "flex-start",
         width: "100%",
-        padding: "0 20px",
+        padding: "0",
       }}
     >
       {steps.map((step, index) => (
         <div
           key={step.id}
-          style={{ display: "flex", alignItems: "center", flex: 1 }}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            flex: 1,
+            position: "relative",
+          }}
         >
-          {/* Step Circle */}
+          {/* Icon and Line Container */}
           <div
             style={{
               display: "flex",
-              flexDirection: "column",
               alignItems: "center",
-              position: "relative",
+              width: "100%",
+              marginBottom: "8px",
             }}
           >
+            {/* Step Icon */}
             <div
               onClick={() => onStepClick(step.id)}
               style={{
-                width: 40,
-                height: 40,
-                borderRadius: "50%",
-                backgroundColor: currentStep >= step.id ? "#181D27" : "#E9EAEB",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 cursor: "pointer",
-                transition: "all 0.3s ease",
-                zIndex: 2,
+                flexShrink: 0,
+                width: 28,
+                height: 28,
               }}
             >
-              {currentStep > step.id ? (
+              {showValidationErrors &&
+              hasValidationErrors &&
+              currentStep === step.id ? (
                 <i
-                  className="la la-check"
-                  style={{ color: "#fff", fontSize: 20 }}
-                ></i>
-              ) : (
-                <span
+                  className="la la-exclamation-triangle"
                   style={{
-                    color: currentStep === step.id ? "#fff" : "#9CA3AF",
-                    fontSize: 14,
-                    fontWeight: 600,
+                    color: "#EF4444",
+                    fontSize: 28,
+                  }}
+                ></i>
+              ) : currentStep > step.id ? (
+                <div
+                  style={{
+                    width: 26,
+                    height: 26,
+                    borderRadius: "50%",
+                    backgroundColor: "#181D27",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    position: "relative",
                   }}
                 >
-                  {step.id}
-                </span>
+                  <i
+                    className="la la-check"
+                    style={{
+                      color: "#fff",
+                      fontSize: 14,
+                      lineHeight: 1,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontWeight: 900,
+                    }}
+                  ></i>
+                </div>
+              ) : (
+                <div
+                  style={{
+                    width: 26,
+                    height: 26,
+                    borderRadius: "50%",
+                    backgroundColor: "transparent",
+                    border:
+                      currentStep === step.id
+                        ? "3px solid #181D27"
+                        : "2px solid #D1D5DB",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 8,
+                      height: 8,
+                      borderRadius: "50%",
+                      backgroundColor:
+                        currentStep === step.id ? "#181D27" : "#D1D5DB",
+                    }}
+                  ></div>
+                </div>
               )}
             </div>
-            <span
-              style={{
-                marginTop: 8,
-                fontSize: 12,
-                color: currentStep === step.id ? "#181D27" : "#6B7280",
-                fontWeight: currentStep === step.id ? 600 : 400,
-                textAlign: "center",
-                maxWidth: 120,
-              }}
-            >
-              {step.name}
-            </span>
+
+            {/* Connector Line */}
+            {index < steps.length - 1 && (
+              <div
+                style={{
+                  flex: 1,
+                  height: 6,
+                  background:
+                    currentStep > step.id
+                      ? "linear-gradient(to right, #93C5FD, #DDD6FE, #FBCFE8)"
+                      : "#E9EAEB",
+                  marginLeft: "12px",
+                  marginRight: "12px",
+                  borderRadius: "3px",
+                }}
+              ></div>
+            )}
           </div>
 
-          {/* Connector Line */}
-          {index < steps.length - 1 && (
-            <div
-              style={{
-                flex: 1,
-                height: 2,
-                backgroundColor: currentStep > step.id ? "#181D27" : "#E9EAEB",
-                marginLeft: 8,
-                marginRight: 8,
-                marginBottom: 30,
-                transition: "all 0.3s ease",
-              }}
-            />
-          )}
+          {/* Step Name */}
+          <span
+            style={{
+              fontSize: 14,
+              color: currentStep === step.id ? "#181D27" : "#9CA3AF",
+              fontWeight: currentStep === step.id ? 600 : 400,
+              lineHeight: "1.4",
+            }}
+          >
+            {step.name}
+          </span>
         </div>
       ))}
     </div>

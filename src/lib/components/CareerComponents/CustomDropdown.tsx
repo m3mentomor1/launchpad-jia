@@ -2,28 +2,65 @@
 import { useState } from "react";
 
 export default function CustomDropdown(props) {
-  const { onSelectSetting, screeningSetting, settingList, placeholder } = props;
+  const {
+    onSelectSetting,
+    screeningSetting,
+    settingList,
+    placeholder,
+    hasError,
+    customStyle,
+  } = props;
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   return (
-    <div className="dropdown w-100">
+    <div
+      className={customStyle ? "dropdown" : "dropdown w-100"}
+      style={customStyle}
+    >
       <button
         disabled={settingList.length === 0}
-        className="dropdown-btn fade-in-bottom"
-        style={{ width: "100%", textTransform: "capitalize" }}
+        className={`dropdown-btn fade-in-bottom ${
+          hasError ? "error-border" : ""
+        }`}
+        style={
+          customStyle
+            ? {
+                width: "100%",
+                textTransform: "capitalize",
+                border: "none",
+                backgroundColor: "transparent",
+                padding: "0 16px 0 8px",
+                height: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }
+            : {
+                width: "100%",
+                textTransform: "capitalize",
+              }
+        }
         type="button"
         onClick={() => setDropdownOpen((v) => !v)}
       >
-        <span>
+        <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <i
             className={
               settingList.find((setting) => setting.name === screeningSetting)
                 ?.icon
             }
-          ></i>{" "}
+            style={{ fontSize: "18px", color: "#6B7280" }}
+          ></i>
           {screeningSetting?.replace("_", " ") || placeholder}
         </span>
-        <i className="la la-angle-down ml-10"></i>
+        <i
+          className="la la-angle-down"
+          style={
+            customStyle
+              ? { marginLeft: "8px", marginRight: "12px" }
+              : { marginLeft: "8px" }
+          }
+        ></i>
       </button>
       <div
         className={`dropdown-menu w-100 mt-1 org-dropdown-anim${
@@ -33,6 +70,7 @@ export default function CustomDropdown(props) {
           padding: "10px",
           maxHeight: 200,
           overflowY: "auto",
+          overflowX: "hidden",
           width: "100%",
           minWidth: "100%",
         }}
@@ -67,10 +105,15 @@ export default function CustomDropdown(props) {
                   display: "flex",
                   flexDirection: "row",
                   alignItems: "center",
-                  gap: "5px",
+                  gap: "10px",
                 }}
               >
-                {setting.icon && <i className={setting.icon}></i>}{" "}
+                {setting.icon && (
+                  <i
+                    className={setting.icon}
+                    style={{ fontSize: "18px", color: "#6B7280" }}
+                  ></i>
+                )}
                 {setting.name?.replace("_", " ")}
               </div>
               {setting.name === screeningSetting && (
