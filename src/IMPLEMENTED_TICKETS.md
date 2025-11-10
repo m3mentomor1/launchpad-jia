@@ -598,6 +598,63 @@ preScreeningAnswers: {
 
 ---
 
+## Testing Checklist
+
+### Ticket 1: Development Environment
+
+- [x] MongoDB connection successful
+- [x] Firebase authentication working
+- [x] OpenAI API accessible
+- [x] Application builds without errors
+- [x] Core API URL missing `/upload-cv` endpoint
+
+### Ticket 2: Segmented Form
+
+- [x] All 4 steps render correctly
+- [x] Step validation works for each step
+- [x] Draft saves to localStorage on step change
+- [x] Draft loads on page refresh
+- [x] "Save and Continue" validates before proceeding
+- [x] "Save as Unpublished" works at any step
+- [x] "Publish" button appears on final step
+- [x] Step indicator shows current progress
+- [x] Can navigate to completed steps
+- [x] Clear draft functionality works
+
+### Ticket 3: XSS Protection
+
+- [x] HTML sanitization removes malicious scripts
+- [x] Plain text fields escape HTML entities
+- [x] Email validation works correctly
+- [x] URL validation works correctly
+- [x] Security headers present in responses
+- [x] Error messages don't expose internal details
+- [x] Validation errors return 400 status
+- [x] Secret prompts excluded from responses
+
+### Ticket 4: Pre-Screening Questions
+
+- [x] Can add custom questions
+- [x] Can add suggested questions
+- [x] Drag-and-drop reordering works
+- [x] Can edit question text
+- [x] Can delete questions
+- [x] Dropdown options can be added/edited/deleted
+- [x] Dropdown options can be reordered
+- [x] Range type shows min/max inputs
+- [x] Validation requires at least 1 question
+- [x] Validation checks question text not empty
+- [x] Validation checks dropdown has options
+- [x] Questions display to applicants
+- [x] All questions marked as required
+- [x] Applicants must answer all questions
+- [x] Answers save to interview record
+- [x] Recruiters can view answers
+- [x] Questions included in career review step
+- [x] CV uploaded doesn't work, seems to be on backend (CORE_API_URL). See problem in ticket #1
+
+---
+
 ## Known Limitations
 
 1. **Pipeline Builder:** Not included in current implementation (as per Ticket 2 requirements)
