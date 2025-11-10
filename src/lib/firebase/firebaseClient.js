@@ -112,7 +112,7 @@ export async function signInWithGoogle(type) {
           if (result.isConfirmed) {
             Swal.close();
           } else if (result.dismiss === Swal.DismissReason.cancel) {
-            window.location.href = "/job-portal";
+            window.location.href = "/";
           }
         });
 
@@ -178,7 +178,7 @@ export async function signInWithGoogle(type) {
 
       if (orgData.data.length == 0) {
         localStorage.role = "applicant";
-        window.location.href = "/job-portal";
+        window.location.href = "/";
         return;
       }
 
