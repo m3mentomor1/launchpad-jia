@@ -612,7 +612,6 @@ preScreeningAnswers: {
 - [x] MongoDB connection successful
 - [x] Firebase authentication working
 - [x] Application builds without errors
-- [x] Core API URL missing `/upload-cv` endpoint
 
 ### Ticket 2: Segmented Form
 
@@ -657,7 +656,7 @@ preScreeningAnswers: {
 - [x] Answers save to interview record
 - [x] Recruiters can view answers
 - [x] Questions included in career review step
-- [x] CV uploaded doesn't work, seems to be on backend (CORE_API_URL). See problem in ticket #1
+- [x] CV uploaded doesn't work, due to the processing of the document needing a valid OpenAI API key with available credits
 
 ---
 
@@ -665,7 +664,7 @@ preScreeningAnswers: {
 
 1. **Pipeline Builder:** Not included in current implementation (as per Ticket 2 requirements)
 2. **Question Limit:** No hard limit on number of pre-screening questions (consider adding max 20)
-3. **CV Upload:** Tested CV upload, it always throws an error saying CORE API URL doesn't have an `/upload-cv` endpoint.
+3. **CV Upload:** CV upload endpoint exists locally at `/api/whitecloak/upload-cv` and successfully processes files (PDF, DOC, DOCX, TXT). However, the CV digitalization step fails due to OpenAI API key limitations. The `.env` file contains a placeholder API key (`your_openai_api_key`). To enable CV upload functionality, add a valid OpenAI API key with available credits to the `.env` file. Note: OpenAI API requires payment - no free tier available.
 
 ---
 
