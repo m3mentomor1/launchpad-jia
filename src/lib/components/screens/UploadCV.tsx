@@ -26,6 +26,7 @@ export default function () {
   const [screeningResult, setScreeningResult] = useState(null);
   const [userCV, setUserCV] = useState(null);
   const [preScreeningAnswers, setPreScreeningAnswers] = useState({});
+  const [openDropdownId, setOpenDropdownId] = useState(null);
   const cvSections = [
     "Introduction",
     "Current Position",
@@ -39,6 +40,30 @@ export default function () {
   ];
   const step = ["Submit CV", "Pre-screening Questions", "Review"];
   const stepStatus = ["Completed", "Pending", "In Progress"];
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (openDropdownId !== null) {
+        const dropdowns = document.querySelectorAll(
+          `.${styles.customDropdown}`
+        );
+        let clickedInside = false;
+
+        dropdowns.forEach((dropdown) => {
+          if (dropdown.contains(e.target)) {
+            clickedInside = true;
+          }
+        });
+
+        if (!clickedInside) {
+          setOpenDropdownId(null);
+        }
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [openDropdownId]);
 
   function handleDragOver(e) {
     e.preventDefault();
@@ -502,6 +527,31 @@ export default function () {
                       automatically pre-fill your CV and also check how well it
                       matches the role.
                     </span>
+                    <button
+                      onClick={() => setCurrentStep(step[1])}
+                      style={{
+                        marginTop: "16px",
+                        background: "transparent",
+                        color: "#6B7280",
+                        border: "1px solid #D5D7DA",
+                        padding: "10px 20px",
+                        borderRadius: "20px",
+                        cursor: "pointer",
+                        fontSize: "14px",
+                        fontWeight: 500,
+                        transition: "all 0.2s ease",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = "#F9FAFB";
+                        e.currentTarget.style.borderColor = "#9CA3AF";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = "transparent";
+                        e.currentTarget.style.borderColor = "#D5D7DA";
+                      }}
+                    >
+                      Skip to Next Step
+                    </button>
                   </div>
                   <input
                     type="file"
@@ -684,7 +734,7 @@ export default function () {
                 <div
                   style={{
                     marginBottom: "24px",
-                    textAlign: "center",
+                    textAlign: "left",
                   }}
                 >
                   <h2
@@ -692,6 +742,7 @@ export default function () {
                       fontSize: "24px",
                       marginBottom: "8px",
                       color: "#181D27",
+                      fontWeight: 600,
                     }}
                   >
                     Quick Pre-screening
@@ -702,211 +753,236 @@ export default function () {
                   </p>
                 </div>
 
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "24px",
-                  }}
-                >
-                  {interview.preScreeningQuestions.map(
-                    (question: any, index: number) => (
-                      <div
-                        key={question.id}
-                        style={{
-                          padding: "20px",
-                          backgroundColor: "#F9FAFB",
-                          borderRadius: "12px",
-                          border: "1px solid #E9EAEB",
-                        }}
-                      >
+                {interview.preScreeningQuestions.map(
+                  (question: any, index: number) => (
+                    <div key={question.id} className={styles.gradient}>
+                      <div className={styles.cvDetailsCard}>
                         <label
                           style={{
                             display: "block",
-                            marginBottom: "12px",
+                            marginBottom: "0",
                             fontWeight: 600,
                             color: "#181D27",
                             fontSize: "16px",
                           }}
                         >
                           {question.question}
-                          <span style={{ color: "#EF4444" }}> *</span>
                         </label>
 
-                        {question.type === "text" && (
-                          <textarea
-                            placeholder="Enter your answer..."
-                            value={preScreeningAnswers[question.id] || ""}
-                            onChange={(e) =>
-                              setPreScreeningAnswers((prev) => ({
-                                ...prev,
-                                [question.id]: e.target.value,
-                              }))
-                            }
-                            style={{
-                              width: "100%",
-                              minHeight: "100px",
-                              padding: "12px",
-                              borderRadius: "8px",
-                              border: "1px solid #D5D7DA",
-                              fontSize: "14px",
-                              resize: "vertical",
-                              fontFamily: "inherit",
-                            }}
-                          />
-                        )}
-
-                        {question.type === "dropdown" && (
-                          <select
-                            value={preScreeningAnswers[question.id] || ""}
-                            onChange={(e) =>
-                              setPreScreeningAnswers((prev) => ({
-                                ...prev,
-                                [question.id]: e.target.value,
-                              }))
-                            }
-                            style={{
-                              width: "100%",
-                              padding: "12px",
-                              borderRadius: "8px",
-                              border: "1px solid #D5D7DA",
-                              fontSize: "14px",
-                              backgroundColor: "#fff",
-                            }}
-                          >
-                            <option value="">Select an option...</option>
-                            {question.options?.map(
-                              (option: string, optIdx: number) => (
-                                <option key={optIdx} value={option}>
-                                  {option}
-                                </option>
-                              )
-                            )}
-                          </select>
-                        )}
-
-                        {question.type === "range" && (
-                          <div
-                            style={{
-                              display: "flex",
-                              gap: "16px",
-                              alignItems: "center",
-                            }}
-                          >
-                            <div style={{ flex: 1 }}>
-                              <label
-                                style={{
-                                  display: "block",
-                                  marginBottom: "6px",
-                                  fontSize: "12px",
-                                  color: "#6B7280",
-                                  fontWeight: 500,
-                                }}
-                              >
-                                Minimum Salary
-                              </label>
-                              <div style={{ position: "relative" }}>
-                                <span
-                                  style={{
-                                    position: "absolute",
-                                    left: "12px",
-                                    top: "50%",
-                                    transform: "translateY(-50%)",
-                                    color: "#6B7280",
-                                    fontSize: "14px",
-                                  }}
-                                >
-                                  ₱
-                                </span>
-                                <input
-                                  type="number"
-                                  placeholder="0"
-                                  value={
-                                    preScreeningAnswers[question.id]?.min || ""
-                                  }
-                                  onChange={(e) =>
-                                    setPreScreeningAnswers((prev) => ({
-                                      ...prev,
-                                      [question.id]: {
-                                        ...prev[question.id],
-                                        min: e.target.value,
-                                      },
-                                    }))
-                                  }
-                                  style={{
-                                    width: "100%",
-                                    padding: "12px 12px 12px 28px",
-                                    borderRadius: "8px",
-                                    border: "1px solid #D5D7DA",
-                                    fontSize: "14px",
-                                  }}
-                                />
-                              </div>
-                            </div>
-                            <span
+                        <div className={styles.detailsContainer}>
+                          {question.type === "text" && (
+                            <textarea
+                              placeholder="Enter your answer..."
+                              value={preScreeningAnswers[question.id] || ""}
+                              onChange={(e) =>
+                                setPreScreeningAnswers((prev) => ({
+                                  ...prev,
+                                  [question.id]: e.target.value,
+                                }))
+                              }
                               style={{
-                                color: "#6B7280",
-                                paddingTop: "20px",
+                                width: "100%",
+                                minHeight: "100px",
+                                padding: "12px",
+                                borderRadius: "8px",
+                                border: "1px solid #D5D7DA",
+                                fontSize: "14px",
+                                resize: "vertical",
+                                fontFamily: "inherit",
+                                backgroundColor: "#fff",
+                              }}
+                            />
+                          )}
+
+                          {question.type === "dropdown" && (
+                            <div className={styles.customDropdown}>
+                              <button
+                                type="button"
+                                className={`${styles.dropdownButton} ${
+                                  openDropdownId === question.id
+                                    ? styles.open
+                                    : ""
+                                } ${
+                                  !preScreeningAnswers[question.id]
+                                    ? styles.placeholder
+                                    : ""
+                                }`}
+                                onClick={() =>
+                                  setOpenDropdownId(
+                                    openDropdownId === question.id
+                                      ? null
+                                      : question.id
+                                  )
+                                }
+                              >
+                                <span>
+                                  {preScreeningAnswers[question.id] ||
+                                    "Select an option..."}
+                                </span>
+                                <svg
+                                  className={`${styles.arrow} ${
+                                    openDropdownId === question.id
+                                      ? styles.open
+                                      : ""
+                                  }`}
+                                  width="20"
+                                  height="20"
+                                  viewBox="0 0 20 20"
+                                  fill="none"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                    d="M5 7.5L10 12.5L15 7.5"
+                                    stroke="#181D27"
+                                    strokeWidth="1.67"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
+                                </svg>
+                              </button>
+                              {openDropdownId === question.id && (
+                                <div className={styles.dropdownMenu}>
+                                  {question.options?.map(
+                                    (option: string, optIdx: number) => (
+                                      <div
+                                        key={optIdx}
+                                        className={styles.dropdownOption}
+                                        onClick={() => {
+                                          setPreScreeningAnswers((prev) => ({
+                                            ...prev,
+                                            [question.id]: option,
+                                          }));
+                                          setOpenDropdownId(null);
+                                        }}
+                                      >
+                                        {option}
+                                      </div>
+                                    )
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {question.type === "range" && (
+                            <div
+                              style={{
+                                display: "flex",
+                                gap: "16px",
+                                alignItems: "flex-start",
                               }}
                             >
-                              -
-                            </span>
-                            <div style={{ flex: 1 }}>
-                              <label
-                                style={{
-                                  display: "block",
-                                  marginBottom: "6px",
-                                  fontSize: "12px",
-                                  color: "#6B7280",
-                                  fontWeight: 500,
-                                }}
-                              >
-                                Maximum Salary
-                              </label>
-                              <div style={{ position: "relative" }}>
-                                <span
+                              <div style={{ flex: 1 }}>
+                                <label
                                   style={{
-                                    position: "absolute",
-                                    left: "12px",
-                                    top: "50%",
-                                    transform: "translateY(-50%)",
+                                    display: "block",
+                                    marginBottom: "6px",
+                                    fontSize: "12px",
                                     color: "#6B7280",
-                                    fontSize: "14px",
+                                    fontWeight: 500,
                                   }}
                                 >
-                                  ₱
-                                </span>
-                                <input
-                                  type="number"
-                                  placeholder="0"
-                                  value={
-                                    preScreeningAnswers[question.id]?.max || ""
-                                  }
-                                  onChange={(e) =>
-                                    setPreScreeningAnswers((prev) => ({
-                                      ...prev,
-                                      [question.id]: {
-                                        ...prev[question.id],
-                                        max: e.target.value,
-                                      },
-                                    }))
-                                  }
+                                  Minimum Salary
+                                </label>
+                                <div style={{ position: "relative" }}>
+                                  <span
+                                    style={{
+                                      position: "absolute",
+                                      left: "12px",
+                                      top: "50%",
+                                      transform: "translateY(-50%)",
+                                      color: "#6B7280",
+                                      fontSize: "14px",
+                                    }}
+                                  >
+                                    ₱
+                                  </span>
+                                  <input
+                                    type="number"
+                                    placeholder="0"
+                                    value={
+                                      preScreeningAnswers[question.id]?.min ||
+                                      ""
+                                    }
+                                    onChange={(e) =>
+                                      setPreScreeningAnswers((prev) => ({
+                                        ...prev,
+                                        [question.id]: {
+                                          ...prev[question.id],
+                                          min: e.target.value,
+                                        },
+                                      }))
+                                    }
+                                    style={{
+                                      width: "100%",
+                                      padding: "12px 12px 12px 28px",
+                                      borderRadius: "8px",
+                                      border: "1px solid #D5D7DA",
+                                      fontSize: "14px",
+                                      backgroundColor: "#fff",
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                              <div style={{ flex: 1 }}>
+                                <label
                                   style={{
-                                    width: "100%",
-                                    padding: "12px 12px 12px 28px",
-                                    borderRadius: "8px",
-                                    border: "1px solid #D5D7DA",
-                                    fontSize: "14px",
+                                    display: "block",
+                                    marginBottom: "6px",
+                                    fontSize: "12px",
+                                    color: "#6B7280",
+                                    fontWeight: 500,
                                   }}
-                                />
+                                >
+                                  Maximum Salary
+                                </label>
+                                <div style={{ position: "relative" }}>
+                                  <span
+                                    style={{
+                                      position: "absolute",
+                                      left: "12px",
+                                      top: "50%",
+                                      transform: "translateY(-50%)",
+                                      color: "#6B7280",
+                                      fontSize: "14px",
+                                    }}
+                                  >
+                                    ₱
+                                  </span>
+                                  <input
+                                    type="number"
+                                    placeholder="0"
+                                    value={
+                                      preScreeningAnswers[question.id]?.max ||
+                                      ""
+                                    }
+                                    onChange={(e) =>
+                                      setPreScreeningAnswers((prev) => ({
+                                        ...prev,
+                                        [question.id]: {
+                                          ...prev[question.id],
+                                          max: e.target.value,
+                                        },
+                                      }))
+                                    }
+                                    style={{
+                                      width: "100%",
+                                      padding: "12px 12px 12px 28px",
+                                      borderRadius: "8px",
+                                      border: "1px solid #D5D7DA",
+                                      fontSize: "14px",
+                                      backgroundColor: "#fff",
+                                    }}
+                                  />
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </div>
-                    )
-                  )}
-                </div>
+                    </div>
+                  )
+                )}
 
                 <button
                   onClick={handlePreScreeningSubmit}
@@ -927,9 +1003,27 @@ export default function () {
                     fontWeight: 500,
                     opacity: isAllPreScreeningAnswered() ? 1 : 0.6,
                     transition: "all 0.2s ease",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
                   }}
                 >
                   Continue
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M4.16669 10H15.8334M15.8334 10L10 4.16669M15.8334 10L10 15.8334"
+                      stroke="currentColor"
+                      strokeWidth="1.67"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
                 </button>
               </div>
             )}
